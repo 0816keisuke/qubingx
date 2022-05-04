@@ -1,0 +1,13 @@
+# New implemantation
+one-way-n-hot / two-way-n-hot
+Convert between Ising and QUBO
+
+# Combinatorial Optimiztion Problem from Lucas
+Number Partitioning Problem
+Graph Partitioning Problem
+Cliques Problem
+Binary Integer Linear Programming
+Graph Coloring Problem
+Hamilton Cycles/Path Problem
+Knapsack Problem
+Multi-Dimentional Knapsack Problem
