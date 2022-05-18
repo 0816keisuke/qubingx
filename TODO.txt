@@ -11,3 +11,7 @@ Graph Coloring Problem
 Hamilton Cycles/Path Problem
 Knapsack Problem
 Multi-Dimentional Knapsack Problem
+
+# Utility
+util/analyzer ... analyze violation of penalty term.
+util/graphconversion ... json <-> adjacency <-> list.
