@@ -48,11 +48,11 @@ class QAP(Base):
                         coef = self.factory_matrix[i, j] * self.distance_matrix[k, l]
                         if coef == 0:
                             continue
-                        self.cost_qubo[idx_i, idx_j] += coef
+                        self.qubo_cost[idx_i, idx_j] += coef
         # Make QUBO upper triangular matrix
         for i in range(self.NUM_SPIN):
             for j in range(i+1, self.NUM_SPIN):
-                self.cost_qubo[j, i] = 0
+                self.qubo_cost[j, i] = 0
 
     def penalty_term(self, NUM_FACTORY, ALPHA):
         # Constraint term1 (1-hot of horizontal line)
@@ -63,15 +63,15 @@ class QAP(Base):
                     idx_i = self.spin_index[i, k]
                     idx_j = self.spin_index[i, l]
                     coef = 2
-                    self.penalty_qubo[idx_i, idx_j] += ALPHA * coef
+                    self.qubo_penalty[idx_i, idx_j] += ALPHA * coef
         # Linear term
         for i in range(NUM_FACTORY):
             for k in range(NUM_FACTORY):
                 idx = self.spin_index[i, k]
                 coef = -1
-                self.penalty_qubo[idx, idx] += ALPHA * coef
+                self.qubo_penalty[idx, idx] += ALPHA * coef
         # Constant term
-        self.penalty_const[0] += ALPHA * NUM_FACTORY
+        self.const_penalty[0] += ALPHA * NUM_FACTORY
 
         # Constraint term2 (1-hot of vertical line)
         # Quadratic term
@@ -81,12 +81,12 @@ class QAP(Base):
                     idx_i = self.spin_index[i, k]
                     idx_j = self.spin_index[j, k]
                     coef = 2
-                    self.penalty_qubo[idx_i, idx_j] += ALPHA * coef
+                    self.qubo_penalty[idx_i, idx_j] += ALPHA * coef
         # Linear term
         for k in range(NUM_FACTORY):
             for i in range(NUM_FACTORY):
                 idx = self.spin_index[i, k]
                 coef = -1
-                self.penalty_qubo[idx, idx] += ALPHA * coef
+                self.qubo_penalty[idx, idx] += ALPHA * coef
         # Constant term
-        self.penalty_const[0] += ALPHA * NUM_FACTORY
+        self.const_penalty[0] += ALPHA * NUM_FACTORY
