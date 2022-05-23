@@ -1,5 +1,5 @@
 # New implemantation
-one-way-n-hot / two-way-n-hot
+Use scipy.sparse
 Convert between Ising and QUBO
 
 # Combinatorial Optimiztion Problem from Lucas
