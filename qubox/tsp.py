@@ -41,11 +41,11 @@ class TSP(Base):
                     coef  = self.distance_matrix[u, v]
                     if coef == 0:
                         continue
-                    self.cost_qubo[idx_i, idx_j] += coef
+                    self.qubo_cost[idx_i, idx_j] += coef
         # Make QUBO upper triangular matrix
         for i in range(self.NUM_SPIN):
             for j in range(i+1, self.NUM_SPIN):
-                self.cost_qubo[j, i] = 0
+                self.qubo_cost[j, i] = 0
 
     def penalty_term(self, NUM_CITY, ALPHA):
         # Calculate constraint term1 (1-hot of horizontal line)
@@ -56,15 +56,15 @@ class TSP(Base):
                     idx_i = self.spin_index[t, u]
                     idx_j = self.spin_index[t, v]
                     coef = 2
-                    self.penalty_qubo[idx_i, idx_j] += ALPHA * coef
+                    self.qubo_penalty[idx_i, idx_j] += ALPHA * coef
         # Linear term
         for t in range(NUM_CITY):
             for u in range(NUM_CITY):
                 idx = self.spin_index[t, u]
                 coef = -1
-                self.penalty_qubo[idx, idx] += ALPHA * coef
+                self.qubo_penalty[idx, idx] += ALPHA * coef
         # Constant term
-        self.penalty_const[0] += ALPHA * NUM_CITY
+        self.const_penalty[0] += ALPHA * NUM_CITY
 
         # Calculate constraint term2 (1-hot of vertical line)
         # Quadratic term
@@ -74,12 +74,12 @@ class TSP(Base):
                     idx_i = self.spin_index[t, u]
                     idx_j = self.spin_index[tt, u]
                     coef = 2
-                    self.penalty_qubo[idx_i, idx_j] += ALPHA * coef
+                    self.qubo_penalty[idx_i, idx_j] += ALPHA * coef
         # Linear term
         for u in range(NUM_CITY):
             for t in range(NUM_CITY):
                 idx = self.spin_index[t, u]
                 coef = -1
-                self.penalty_qubo[idx, idx] += ALPHA * coef
+                self.qubo_penalty[idx, idx] += ALPHA * coef
         # Constant term
-        self.penalty_const[0] += ALPHA * NUM_CITY
+        self.const_penalty[0] += ALPHA * NUM_CITY
