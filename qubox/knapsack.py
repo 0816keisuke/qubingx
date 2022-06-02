@@ -121,10 +121,10 @@ class Knapsack(Base):
                 self.qubo_penalty[idx, idx] += ALPHA * coef
 
         elif encoding == "log":
-            #   { W -  (\sum_(a=0)^(N-1) w_a x_a) - (\sum_(n=0)^([log_2(W-1)]) 2^n y_n) }^2
-            # = W^2 - 2 * W * (\sum_(a=0)^(N-1) w_a x_a) - 2 * W * (\sum_(n=0)^([log_2(W-1)]) 2^n y_n)
-            #       + (\sum_(a=0)^(N-1) w_a x_a)^2 + 2 * (\sum_(a=0)^(N-1) w_a x_a) * (\sum_(n=0)^([log_2(W-1)]) 2^n y_n)
-            #       + (\sum_(n=0)^([log_2(W-1)]) 2^n y_n)^2
+            #   { W -  ( \sum_(a=0)^(N-1) w_a x_a ) - ( \sum_(n=0)^([log_2(W-1)]) 2^n y_n ) }^2
+            # = W^2 - 2 * W * ( \sum_(a=0)^(N-1) w_a x_a ) - 2 * W * ( \sum_(n=0)^([log_2(W-1)]) 2^n y_n )
+            #       + ( \sum_(a=0)^(N-1) w_a x_a )^2 + 2 * ( \sum_(a=0)^(N-1) w_a x_a ) * ( \sum_(n=0)^([log_2(W-1)]) 2^n y_n )
+            #       + ( \sum_(n=0)^([log_2(W-1)]) 2^n y_n )^2
 
             # [log_2(W-1)]
             num_binary = math.floor(math.log(max_weight-1, 2))
