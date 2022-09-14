@@ -43,7 +43,7 @@ class MKP(Base):
 
         NUM_ITEM = len(value_list)
         if encoding == "one-hot":
-            super().__init__(NUM_SPIN = len(value_list) + max_weight)
+            super().__init__(NUM_SPIN = len(value_list) + sum(max_weight_list))
         elif encoding == "log":
             num_slack_list = [0 if dim_i==-1 else math.floor(math.log(max_weight_list[dim_i]-1, 2)) + 1 for dim_i in range(-1, dim)]
             NUM_SPIN = len(value_list) + sum(num_slack_list)
