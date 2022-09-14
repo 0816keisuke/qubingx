@@ -1,5 +1,5 @@
 import numpy as np
-from .base import Base
+from qubox.base import Base
 
 class TSP(Base):
     def __init__(self,

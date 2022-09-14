@@ -1,6 +1,6 @@
 import math
 import numpy as np
-from .base import Base
+from qubox.base import Base
 
 class Knapsack(Base):
     def __init__(self,
