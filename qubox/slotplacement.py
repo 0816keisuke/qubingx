@@ -35,7 +35,7 @@ class SlotPlacement(Base):
         np.set_printoptions(edgeitems=10) # Chenge the setting for printing numpy
 
         self.cost_term(NUM_FACTORY)
-        self.penalty_term(NUM_FACTORY, ALPHA)
+        self.penalty_term(NUM_ITEM, NUM_SLOT, ALPHA, BETA)
         self.all_term()
         self.make_qubo_list()
 
@@ -54,7 +54,7 @@ class SlotPlacement(Base):
         # Make QUBO upper triangular matrix
         self.qubo_cost = np.triu(self.qubo_cost + np.tril(self.qubo_cost, k=-1).T + np.triu(self.qubo_cost).T) - np.diag(self.qubo_cost.diagonal())
 
-    def penalty_term(self, NUM_ITEM, NUM_SLOT, ALPHA):
+    def penalty_term(self, NUM_ITEM, NUM_SLOT, ALPHA, BETA):
         # Calculate constraint term1: item assignment constraint
         # (1-hot constraint of spin-matrix vertical line)
         # Quadratic term
@@ -83,4 +83,4 @@ class SlotPlacement(Base):
                     idx_i = self.spin_index[i, a]
                     idx_j = self.spin_index[j, a]
                     coef = 2
-                    self.qubo_penalty[idx_i, idx_j] += ALPHA * coef
+                    self.qubo_penalty[idx_i, idx_j] += BETA * coef
