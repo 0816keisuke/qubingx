@@ -52,9 +52,7 @@ class SlotPlacement(Base):
                             continue
                         self.cost_qubo[idx_i, idx_j] += coef
         # Make QUBO upper triangular matrix
-        for i in range(self.NUM_SPIN):
-            for j in range(i+1, self.NUM_SPIN):
-                self.cost_qubo[j, i] = 0
+        self.qubo_cost = np.triu(self.qubo_cost + np.tril(self.qubo_cost, k=-1).T + np.triu(self.qubo_cost).T) - np.diag(self.qubo_cost.diagonal())
 
     def penalty_term(self, NUM_ITEM, NUM_SLOT, ALPHA):
         # Calculate constraint term1: item assignment constraint
