@@ -3,38 +3,38 @@ from qubox.base import Base
 
 class SlotPlacement(Base):
     def __init__(self,
-                wire_matrix,
-                distance_matrix,
+                wire_mtx,
+                dist_mtx,
                 ALPHA=1,
                 BETA=1
                 ):
         # Check tye type of Arguments
-        if isinstance(wire_matrix, list):
-            wire_matrix = np.array(wire_matrix)
-        elif isinstance(wire_matrix, np.ndarray):
+        if isinstance(wire_mtx, list):
+            wire_mtx = np.array(wire_mtx)
+        elif isinstance(wire_mtx, np.ndarray):
             pass
         else:
-            print("The type of the argument 'wire_matrix' is WRONG.")
+            print("The type of the argument 'wire_mtx' is WRONG.")
             print("It shoud be list/numpy.ndarray.")
             exit()
-        if isinstance(distance_matrix, list):
-            distance_matrix = np.array(distance_matrix)
-        elif isinstance(distance_matrix, np.ndarray):
+        if isinstance(dist_mtx, list):
+            dist_mtx = np.array(dist_mtx)
+        elif isinstance(dist_mtx, np.ndarray):
             pass
         else:
-            print("The type of the argument 'distance_matrix' is WRONG.")
+            print("The type of the argument 'dist_mtx' is WRONG.")
             print("It shoud be list/numpy.ndarray.")
             exit()
 
-        NUM_ITEM = len(wire_matrix)
-        NUM_SLOT = len(distance_matrix)
-        self.wire_matrix = wire_matrix
-        self.distance_matrix = distance_matrix
+        NUM_ITEM = len(wire_mtx)
+        NUM_SLOT = len(dist_mtx)
+        self.wire_mtx = wire_mtx
+        self.dist_mtx = dist_mtx
         super().__init__(NUM_SPIN = NUM_ITEM * NUM_SLOT)
         self.spin_index = np.arange(NUM_ITEM * NUM_SLOT).reshape(NUM_ITEM, NUM_SLOT)
         np.set_printoptions(edgeitems=10) # Chenge the setting for printing numpy
 
-        self.cost_term(NUM_FACTORY)
+        self.cost_term(NUM_ITEM, NUM_SLOT)
         self.penalty_term(NUM_ITEM, NUM_SLOT, ALPHA, BETA)
         self.all_term()
         self.make_qubo_list()
@@ -47,7 +47,7 @@ class SlotPlacement(Base):
                     for j in range(NUM_ITEM):
                         idx_i = self.spin_index[i, a]
                         idx_j = self.spin_index[j, b]
-                        coef = self.wire_matrix[i, j] * self.distance_matrix[a, b] / 2
+                        coef = self.wire_mtx[i, j] * self.dist_mtx[a, b] / 2
                         if coef == 0:
                             continue
                         self.qubo_cost[idx_i, idx_j] += coef
