@@ -1,6 +1,5 @@
 import numpy as np
 from abc import ABCMeta, abstractmethod
-# import plotly.express as px
 
 class Base(metaclass=ABCMeta):
     def __init__(self, NUM_SPIN):
