@@ -3,31 +3,31 @@ from qubox.base import Base
 
 class QAP(Base):
     def __init__(self,
-                factory_matrix,
-                distance_matrix,
+                weight_mtx,
+                dist_mtx,
                 ALPHA=1
                 ):
         # Check tye type of Arguments
-        if isinstance(factory_matrix, list):
-            factory_matrix = np.array(factory_matrix)
-        elif isinstance(factory_matrix, np.ndarray):
+        if isinstance(weight_mtx, list):
+            weight_mtx = np.array(weight_mtx)
+        elif isinstance(weight_mtx, np.ndarray):
             pass
         else:
-            print("The type of the argument 'factory_matrix' is WRONG.")
+            print("The type of the argument 'weight_mtx' is WRONG.")
             print("It shoud be list/numpy.ndarray.")
             exit()
-        if isinstance(distance_matrix, list):
-            distance_matrix = np.array(distance_matrix)
-        elif isinstance(distance_matrix, np.ndarray):
+        if isinstance(dist_mtx, list):
+            dist_mtx = np.array(dist_mtx)
+        elif isinstance(dist_mtx, np.ndarray):
             pass
         else:
-            print("The type of the argument 'distance_matrix' is WRONG.")
+            print("The type of the argument 'dist_mtx' is WRONG.")
             print("It shoud be list/numpy.ndarray.")
             exit()
 
-        NUM_FACTORY = len(factory_matrix)
-        self.factory_matrix = factory_matrix
-        self.distance_matrix = distance_matrix
+        NUM_FACTORY = len(weight_mtx)
+        self.weight_mtx = weight_mtx
+        self.dist_mtx = dist_mtx
         super().__init__(num_spin = NUM_FACTORY * NUM_FACTORY)
         self.spin_index = np.arange(NUM_FACTORY * NUM_FACTORY).reshape(NUM_FACTORY, NUM_FACTORY)
         np.set_printoptions(edgeitems=10) # Chenge the setting for printing numpy
@@ -44,7 +44,7 @@ class QAP(Base):
                     for l in range(NUM_FACTORY):
                         idx_i = self.spin_index[i, k]
                         idx_j = self.spin_index[j, l]
-                        coef = self.factory_matrix[i, j] * self.distance_matrix[k, l]
+                        coef = self.weight_mtx[i, j] * self.dist_mtx[k, l]
                         if coef == 0:
                             continue
                         self.q_cost[idx_i, idx_j] += coef

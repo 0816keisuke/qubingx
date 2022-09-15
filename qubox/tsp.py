@@ -3,21 +3,21 @@ from qubox.base import Base
 
 class TSP(Base):
     def __init__(self,
-                distance_matrix,
+                dist_mtx,
                 ALPHA=1
                 ):
         # Check tye type of Arguments
-        if isinstance(distance_matrix, list):
-            distance_matrix = np.array(distance_matrix)
-        elif isinstance(distance_matrix, np.ndarray):
+        if isinstance(dist_mtx, list):
+            dist_mtx = np.array(dist_mtx)
+        elif isinstance(dist_mtx, np.ndarray):
             pass
         else:
-            print("The type of the argument 'distance_matrix' is WRONG.")
+            print("The type of the argument 'dist_mtx' is WRONG.")
             print("It shoud be list/numpy.ndarray.")
             exit()
 
-        NUM_CITY = len(distance_matrix)
-        self.distance_matrix = distance_matrix
+        NUM_CITY = len(dist_mtx)
+        self.dist_mtx = dist_mtx
         super().__init__(num_spin = NUM_CITY * NUM_CITY)
         self.spin_index = np.arange(NUM_CITY * NUM_CITY).reshape(NUM_CITY, NUM_CITY)
         np.set_printoptions(edgeitems=10) # Chenge the setting for printing numpy
@@ -37,7 +37,7 @@ class TSP(Base):
                     elif t == NUM_CITY-1:
                         idx_i = self.spin_index[t, u]
                         idx_j = self.spin_index[0, v]
-                    coef  = self.distance_matrix[u, v]
+                    coef  = self.dist_mtx[u, v]
                     if coef == 0:
                         continue
                     self.q_cost[idx_i, idx_j] += coef
