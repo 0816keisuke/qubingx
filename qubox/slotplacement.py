@@ -30,7 +30,7 @@ class SlotPlacement(Base):
         NUM_SLOT = len(dist_mtx)
         self.wire_mtx = wire_mtx
         self.dist_mtx = dist_mtx
-        super().__init__(NUM_SPIN = NUM_ITEM * NUM_SLOT)
+        super().__init__(num_spin = NUM_ITEM * NUM_SLOT)
         self.spin_index = np.arange(NUM_ITEM * NUM_SLOT).reshape(NUM_ITEM, NUM_SLOT)
         np.set_printoptions(edgeitems=10) # Chenge the setting for printing numpy
 

@@ -27,7 +27,7 @@ class NHot(Base):
             print("It shoud be bool.")
             exit()
 
-        super().__init__(NUM_SPIN = num_spin_row * num_spin_row)
+        super().__init__(num_spin = num_spin_row * num_spin_row)
         self.spin_index = np.arange(num_spin_row * num_spin_row).reshape(num_spin_row, num_spin_row)
         np.set_printoptions(edgeitems=10) # Chenge the setting for printing numpy
 

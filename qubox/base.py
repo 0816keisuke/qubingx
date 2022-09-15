@@ -2,12 +2,12 @@ import numpy as np
 from abc import ABCMeta, abstractmethod
 
 class Base(metaclass=ABCMeta):
-    def __init__(self, NUM_SPIN):
+    def __init__(self, num_spin):
         # QUBO matrix
-        self.NUM_SPIN = NUM_SPIN
-        self.qubo_all = np.zeros((self.NUM_SPIN, self.NUM_SPIN))
-        self.qubo_cost = np.zeros((self.NUM_SPIN, self.NUM_SPIN))
-        self.qubo_penalty = np.zeros((self.NUM_SPIN, self.NUM_SPIN))
+        self.num_spin = num_spin
+        self.qubo_all = np.zeros((self.num_spin, self.num_spin))
+        self.qubo_cost = np.zeros((self.num_spin, self.num_spin))
+        self.qubo_penalty = np.zeros((self.num_spin, self.num_spin))
 
         self.const_all = np.zeros((1))
         self.const_cost = np.zeros((1))

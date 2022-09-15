@@ -18,7 +18,7 @@ class TSP(Base):
 
         NUM_CITY = len(distance_matrix)
         self.distance_matrix = distance_matrix
-        super().__init__(NUM_SPIN = NUM_CITY * NUM_CITY)
+        super().__init__(num_spin = NUM_CITY * NUM_CITY)
         self.spin_index = np.arange(NUM_CITY * NUM_CITY).reshape(NUM_CITY, NUM_CITY)
         np.set_printoptions(edgeitems=10) # Chenge the setting for printing numpy
 

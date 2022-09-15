@@ -14,7 +14,7 @@ class MaxCut(Base):
             exit()
 
         NUM_VERTEX = len(adjacency_matrix)
-        super().__init__(NUM_SPIN = NUM_VERTEX)
+        super().__init__(num_spin = NUM_VERTEX)
         self.adjacency_matrix = adjacency_matrix
         np.set_printoptions(edgeitems=10) # Chenge the setting for printing numpy
 

@@ -28,7 +28,7 @@ class QAP(Base):
         NUM_FACTORY = len(factory_matrix)
         self.factory_matrix = factory_matrix
         self.distance_matrix = distance_matrix
-        super().__init__(NUM_SPIN = NUM_FACTORY * NUM_FACTORY)
+        super().__init__(num_spin = NUM_FACTORY * NUM_FACTORY)
         self.spin_index = np.arange(NUM_FACTORY * NUM_FACTORY).reshape(NUM_FACTORY, NUM_FACTORY)
         np.set_printoptions(edgeitems=10) # Chenge the setting for printing numpy
 

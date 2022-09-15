@@ -38,9 +38,9 @@ class Knapsack(Base):
 
         NUM_ITEM = len(value_list)
         if encoding == "one-hot":
-            super().__init__(NUM_SPIN = len(value_list) + max_weight)
+            super().__init__(num_spin = len(value_list) + max_weight)
         elif encoding == "log":
-            super().__init__(NUM_SPIN = len(value_list) + math.floor(math.log(max_weight-1, 2)) + 1)
+            super().__init__(num_spin = len(value_list) + math.floor(math.log(max_weight-1, 2)) + 1)
         np.set_printoptions(edgeitems=10) # Chenge the setting for printing numpy
 
         self.cost_term(NUM_ITEM, value_list)
