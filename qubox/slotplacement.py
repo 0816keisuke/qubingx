@@ -49,9 +49,9 @@ class SlotPlacement(Base):
                         coef = self.wire_mtx[i, j] * self.dist_mtx[a, b] / 2
                         if coef == 0:
                             continue
-                        self.qubo_cost[idx_i, idx_j] += coef
+                        self.q_cost[idx_i, idx_j] += coef
         # Make QUBO upper triangular matrix
-        self.qubo_cost = np.triu(self.qubo_cost + np.tril(self.qubo_cost, k=-1).T + np.triu(self.qubo_cost).T) - np.diag(self.qubo_cost.diagonal())
+        self.q_cost = np.triu(self.q_cost + np.tril(self.q_cost, k=-1).T + np.triu(self.q_cost).T) - np.diag(self.q_cost.diagonal())
 
     def penalty_term(self, NUM_ITEM, NUM_SLOT, ALPHA, BETA):
         # Calculate constraint term1: item assignment constraint
@@ -63,15 +63,15 @@ class SlotPlacement(Base):
                     idx_i = self.spin_index[i, a]
                     idx_j = self.spin_index[i, b]
                     coef = 2
-                    self.qubo_penalty[idx_i, idx_j] += ALPHA * coef
+                    self.q_pen[idx_i, idx_j] += ALPHA * coef
         # Linear term
         for i in range(NUM_ITEM):
             for a in range(NUM_SLOT):
                 idx = self.spin_index[i, a]
                 coef = -1
-                self.qubo_penalty[idx, idx] += ALPHA * coef
+                self.q_pen[idx, idx] += ALPHA * coef
         # Constant term
-        self.const_penalty[0] = ALPHA * NUM_ITEM
+        self.const_pen[0] = ALPHA * NUM_ITEM
 
         # Calculate constraint term2: slot assignment constraint
         # (Constraint of spin-matrix horizontal line)
@@ -82,4 +82,4 @@ class SlotPlacement(Base):
                     idx_i = self.spin_index[i, a]
                     idx_j = self.spin_index[j, a]
                     coef = 2
-                    self.qubo_penalty[idx_i, idx_j] += BETA * coef
+                    self.q_pen[idx_i, idx_j] += BETA * coef

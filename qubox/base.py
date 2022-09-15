@@ -5,13 +5,13 @@ class Base(metaclass=ABCMeta):
     def __init__(self, num_spin):
         # QUBO matrix
         self.num_spin = num_spin
-        self.qubo_all = np.zeros((self.num_spin, self.num_spin))
-        self.qubo_cost = np.zeros((self.num_spin, self.num_spin))
-        self.qubo_penalty = np.zeros((self.num_spin, self.num_spin))
+        self.q_all = np.zeros((self.num_spin, self.num_spin))
+        self.q_cost = np.zeros((self.num_spin, self.num_spin))
+        self.q_pen = np.zeros((self.num_spin, self.num_spin))
 
         self.const_all = np.zeros((1))
         self.const_cost = np.zeros((1))
-        self.const_penalty = np.zeros((1))
+        self.const_pen = np.zeros((1))
 
     @abstractmethod
     def cost_term(self):
@@ -22,8 +22,8 @@ class Base(metaclass=ABCMeta):
         pass
 
     def all_term(self):
-        self.qubo_all = self.qubo_cost + self.qubo_penalty
-        self.const_all = self.const_cost + self.const_penalty
+        self.q_all = self.q_cost + self.q_pen
+        self.const_all = self.const_cost + self.const_pen
 
     # Make QUBO index and coefficient list
     def to_list(self, Q, const=0):

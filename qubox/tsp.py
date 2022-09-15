@@ -40,9 +40,9 @@ class TSP(Base):
                     coef  = self.distance_matrix[u, v]
                     if coef == 0:
                         continue
-                    self.qubo_cost[idx_i, idx_j] += coef
+                    self.q_cost[idx_i, idx_j] += coef
         # Make QUBO upper triangular matrix
-        self.qubo_cost = np.triu(self.qubo_cost + np.tril(self.qubo_cost, k=-1).T + np.triu(self.qubo_cost).T) - np.diag(self.qubo_cost.diagonal())
+        self.q_cost = np.triu(self.q_cost + np.tril(self.q_cost, k=-1).T + np.triu(self.q_cost).T) - np.diag(self.q_cost.diagonal())
 
     def penalty_term(self, NUM_CITY, ALPHA):
         # Calculate constraint term1 (1-hot of horizontal line)
@@ -53,15 +53,15 @@ class TSP(Base):
                     idx_i = self.spin_index[t, u]
                     idx_j = self.spin_index[t, v]
                     coef = 2
-                    self.qubo_penalty[idx_i, idx_j] += ALPHA * coef
+                    self.q_pen[idx_i, idx_j] += ALPHA * coef
         # Linear term
         for t in range(NUM_CITY):
             for u in range(NUM_CITY):
                 idx = self.spin_index[t, u]
                 coef = -1
-                self.qubo_penalty[idx, idx] += ALPHA * coef
+                self.q_pen[idx, idx] += ALPHA * coef
         # Constant term
-        self.const_penalty[0] += ALPHA * NUM_CITY
+        self.const_pen[0] += ALPHA * NUM_CITY
 
         # Calculate constraint term2 (1-hot of vertical line)
         # Quadratic term
@@ -71,12 +71,12 @@ class TSP(Base):
                     idx_i = self.spin_index[t, u]
                     idx_j = self.spin_index[tt, u]
                     coef = 2
-                    self.qubo_penalty[idx_i, idx_j] += ALPHA * coef
+                    self.q_pen[idx_i, idx_j] += ALPHA * coef
         # Linear term
         for u in range(NUM_CITY):
             for t in range(NUM_CITY):
                 idx = self.spin_index[t, u]
                 coef = -1
-                self.qubo_penalty[idx, idx] += ALPHA * coef
+                self.q_pen[idx, idx] += ALPHA * coef
         # Constant term
-        self.const_penalty[0] += ALPHA * NUM_CITY
+        self.const_pen[0] += ALPHA * NUM_CITY

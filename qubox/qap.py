@@ -47,8 +47,8 @@ class QAP(Base):
                         coef = self.factory_matrix[i, j] * self.distance_matrix[k, l]
                         if coef == 0:
                             continue
-                        self.qubo_cost[idx_i, idx_j] += coef
-        self.qubo_cost = np.triu(self.qubo_cost + np.tril(self.qubo_cost, k=-1).T + np.triu(self.qubo_cost).T) - np.diag(self.qubo_cost.diagonal())
+                        self.q_cost[idx_i, idx_j] += coef
+        self.q_cost = np.triu(self.q_cost + np.tril(self.q_cost, k=-1).T + np.triu(self.q_cost).T) - np.diag(self.q_cost.diagonal())
 
     def penalty_term(self, NUM_FACTORY, ALPHA):
         # Constraint term1 (1-hot of horizontal line)
@@ -59,15 +59,15 @@ class QAP(Base):
                     idx_i = self.spin_index[i, k]
                     idx_j = self.spin_index[i, l]
                     coef = 2
-                    self.qubo_penalty[idx_i, idx_j] += ALPHA * coef
+                    self.q_pen[idx_i, idx_j] += ALPHA * coef
         # Linear term
         for i in range(NUM_FACTORY):
             for k in range(NUM_FACTORY):
                 idx = self.spin_index[i, k]
                 coef = -1
-                self.qubo_penalty[idx, idx] += ALPHA * coef
+                self.q_pen[idx, idx] += ALPHA * coef
         # Constant term
-        self.const_penalty[0] += ALPHA * NUM_FACTORY
+        self.const_pen[0] += ALPHA * NUM_FACTORY
 
         # Constraint term2 (1-hot of vertical line)
         # Quadratic term
@@ -77,12 +77,12 @@ class QAP(Base):
                     idx_i = self.spin_index[i, k]
                     idx_j = self.spin_index[j, k]
                     coef = 2
-                    self.qubo_penalty[idx_i, idx_j] += ALPHA * coef
+                    self.q_pen[idx_i, idx_j] += ALPHA * coef
         # Linear term
         for k in range(NUM_FACTORY):
             for i in range(NUM_FACTORY):
                 idx = self.spin_index[i, k]
                 coef = -1
-                self.qubo_penalty[idx, idx] += ALPHA * coef
+                self.q_pen[idx, idx] += ALPHA * coef
         # Constant term
-        self.const_penalty[0] += ALPHA * NUM_FACTORY
+        self.const_pen[0] += ALPHA * NUM_FACTORY

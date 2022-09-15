@@ -26,9 +26,9 @@ class MaxCut(Base):
         for i in range(NUM_VERTEX-1):
             for j in range(i+1, NUM_VERTEX):
                 w_ij = self.adjacency_matrix[i, j]
-                self.qubo_cost[i, j] += 2 * w_ij
-                self.qubo_cost[i, i] += -1 * w_ij
-                self.qubo_cost[j, j] += -1 * w_ij
+                self.q_cost[i, j] += 2 * w_ij
+                self.q_cost[i, i] += -1 * w_ij
+                self.q_cost[j, j] += -1 * w_ij
 
     def penalty_term(self):
         pass
