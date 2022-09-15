@@ -25,7 +25,6 @@ class TSP(Base):
         self.cost_term(NUM_CITY)
         self.penalty_term(NUM_CITY, ALPHA)
         self.all_term()
-        self.make_qubo_list()
 
     def cost_term(self, NUM_CITY):
         # Quadratic term

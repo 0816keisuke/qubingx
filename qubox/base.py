@@ -13,11 +13,6 @@ class Base(metaclass=ABCMeta):
         self.const_cost = np.zeros((1))
         self.const_penalty = np.zeros((1))
 
-        # QUBO index and coefficient list
-        self.qubo_list_all = []
-        self.qubo_list_cost = []
-        self.qubo_list_penalty = []
-
     @abstractmethod
     def cost_term(self):
         pass
@@ -31,43 +26,23 @@ class Base(metaclass=ABCMeta):
         self.const_all = self.const_cost + self.const_penalty
 
     # Make QUBO index and coefficient list
-    def make_qubo_list(self):
-        # Cost term
-        for i in range(self.NUM_SPIN):
-            for j in range(i, self.NUM_SPIN):
-                coef = self.qubo_cost[i, j]
+    def to_list(self, Q, const=0):
+        Q_list = []
+        for i in range(self.num_spin):
+            for j in range(i, self.num_spin):
+                coef = Q[i, j]
                 if not coef == 0:
-                    self.qubo_list_cost.append([i, j, coef])
-        if not self.const_cost[0] == 0:
-            self.qubo_list_cost.append([-1, -1, self.const_cost[0]])
-        self.qubo_list_cost = np.array(self.qubo_list_cost)
-
-        # Penalty term
-        for i in range(self.NUM_SPIN):
-            for j in range(i, self.NUM_SPIN):
-                coef = self.qubo_penalty[i, j]
-                if not coef == 0:
-                    self.qubo_list_penalty.append([i, j, coef])
-        if not self.const_penalty[0] == 0:
-            self.qubo_list_penalty.append([-1, -1, self.const_penalty[0]])
-        self.qubo_list_penalty = np.array(self.qubo_list_penalty)
-
-        # All term
-        for i in range(self.NUM_SPIN):
-            for j in range(i, self.NUM_SPIN):
-                coef = self.qubo_all[i, j]
-                if not coef == 0:
-                    self.qubo_list_all.append([i, j, coef])
-        if not self.const_all[0] == 0:
-            self.qubo_list_all.append([-1, -1, self.const_all[0]])
-        self.qubo_list_all = np.array(self.qubo_list_all)
+                    Q_list.append([i, j, coef])
+        if const != 0:
+            Q_list.append([-1, -1, const])
+        return np.array(Q_list)
 
     # def convert_qubo_to_ising(self):
     #     self.const_ising += 4 * self.const_qubo # Multiply by 4 to convert to integer, as appearance of fraction 1/4
-    #     for i in range(self.NUM_SPIN):
+    #     for i in range(self.num_spin):
     #         self.const_ising += 2 * self.bias_qubo[i]
     #         self.bias_ising[i] += 2 * self.bias_qubo[i]
-    #         for j in range(i, self.NUM_SPIN):
+    #         for j in range(i, self.num_spin):
     #             self.const_ising += self.weight_qubo[i][j]
     #             self.bias_ising[i] += self.weight_qubo[i][j]
     #             self.bias_ising[j] += self.weight_qubo[i][j]
@@ -77,10 +52,10 @@ class Base(metaclass=ABCMeta):
 
     # def convert_ising_to_qubo(self):
     #     self.const_qubo += self.const_ising
-    #     for i in range(self.NUM_SPIN):
+    #     for i in range(self.num_spin):
     #         self.const_qubo += -1 * self.bias_ising[i]
     #         self.bias_qubo[i] += 2 * self.bias_ising[i]
-    #         for j in range(i, self.NUM_SPIN):
+    #         for j in range(i, self.num_spin):
     #             self.const_qubo += self.weight_ising[i][j]
     #             self.bias_qubo[i] += -2 * self.weight_ising[i][j]
     #             self.bias_qubo[j] += -2 * self.weight_ising[i][j]

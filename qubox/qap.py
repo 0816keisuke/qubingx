@@ -35,7 +35,6 @@ class QAP(Base):
         self.cost_term(NUM_FACTORY)
         self.penalty_term(NUM_FACTORY, ALPHA)
         self.all_term()
-        self.make_qubo_list()
 
     def cost_term(self, NUM_FACTORY):
         # Quadratic term

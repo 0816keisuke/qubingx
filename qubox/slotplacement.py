@@ -37,7 +37,6 @@ class SlotPlacement(Base):
         self.cost_term(NUM_ITEM, NUM_SLOT)
         self.penalty_term(NUM_ITEM, NUM_SLOT, ALPHA, BETA)
         self.all_term()
-        self.make_qubo_list()
 
     def cost_term(self, NUM_ITEM, NUM_SLOT):
         # Quadratic term

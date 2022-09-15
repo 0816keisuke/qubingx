@@ -21,7 +21,6 @@ class MaxCut(Base):
         self.cost_term(NUM_VERTEX)
         self.penalty_term()
         self.all_term()
-        self.make_qubo_list()
 
     def cost_term(self, NUM_VERTEX):
         for i in range(NUM_VERTEX-1):

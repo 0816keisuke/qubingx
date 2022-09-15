@@ -34,7 +34,6 @@ class NHot(Base):
         self.cost_term()
         self.penalty_term(num_spin_row, hot_num, row_hot, col_hot, ALPHA)
         self.all_term()
-        self.make_qubo_list()
 
     def cost_term(self):
         pass

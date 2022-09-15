@@ -53,7 +53,6 @@ class MKP(Base):
         self.cost_term(NUM_ITEM, value_list)
         self.penalty_term(encoding, dim, NUM_ITEM, weight_list, max_weight_list, num_slack_list, ALPHA)
         self.all_term()
-        self.make_qubo_list()
 
     def cost_term(self, NUM_ITEM, value_list):
         # Cost term

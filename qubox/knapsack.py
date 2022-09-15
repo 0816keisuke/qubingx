@@ -46,7 +46,6 @@ class Knapsack(Base):
         self.cost_term(NUM_ITEM, value_list)
         self.penalty_term(encoding, NUM_ITEM, weight_list, max_weight, ALPHA)
         self.all_term()
-        self.make_qubo_list()
 
     def cost_term(self, NUM_ITEM, value_list):
         # Cost term
