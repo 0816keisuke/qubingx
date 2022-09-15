@@ -14,14 +14,14 @@ class Base(metaclass=ABCMeta):
         self.const_pen = np.zeros((1))
 
     @abstractmethod
-    def cost_term(self):
+    def h_cost(self):
         pass
 
     @abstractmethod
-    def penalty_term(self):
+    def h_pen(self):
         pass
 
-    def all_term(self):
+    def h_all(self):
         self.q_all = self.q_cost + self.q_pen
         self.const_all = self.const_cost + self.const_pen
 

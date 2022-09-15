@@ -34,11 +34,11 @@ class SlotPlacement(Base):
         self.spin_index = np.arange(NUM_ITEM * NUM_SLOT).reshape(NUM_ITEM, NUM_SLOT)
         np.set_printoptions(edgeitems=10) # Chenge the setting for printing numpy
 
-        self.cost_term(NUM_ITEM, NUM_SLOT)
-        self.penalty_term(NUM_ITEM, NUM_SLOT, ALPHA, BETA)
-        self.all_term()
+        self.h_cost(NUM_ITEM, NUM_SLOT)
+        self.h_pen(NUM_ITEM, NUM_SLOT, ALPHA, BETA)
+        self.h_all()
 
-    def cost_term(self, NUM_ITEM, NUM_SLOT):
+    def h_cost(self, NUM_ITEM, NUM_SLOT):
         # Quadratic term
         for a in range(NUM_SLOT):
             for i in range(NUM_ITEM):
@@ -53,7 +53,7 @@ class SlotPlacement(Base):
         # Make QUBO upper triangular matrix
         self.q_cost = np.triu(self.q_cost + np.tril(self.q_cost, k=-1).T + np.triu(self.q_cost).T) - np.diag(self.q_cost.diagonal())
 
-    def penalty_term(self, NUM_ITEM, NUM_SLOT, ALPHA, BETA):
+    def h_pen(self, NUM_ITEM, NUM_SLOT, ALPHA, BETA):
         # Calculate constraint term1: item assignment constraint
         # (1-hot constraint of spin-matrix vertical line)
         # Quadratic term

@@ -22,11 +22,11 @@ class TSP(Base):
         self.spin_index = np.arange(NUM_CITY * NUM_CITY).reshape(NUM_CITY, NUM_CITY)
         np.set_printoptions(edgeitems=10) # Chenge the setting for printing numpy
 
-        self.cost_term(NUM_CITY)
-        self.penalty_term(NUM_CITY, ALPHA)
-        self.all_term()
+        self.h_cost(NUM_CITY)
+        self.h_pen(NUM_CITY, ALPHA)
+        self.h_all()
 
-    def cost_term(self, NUM_CITY):
+    def h_cost(self, NUM_CITY):
         # Quadratic term
         for t in range(NUM_CITY):
             for u in range(NUM_CITY):
@@ -44,7 +44,7 @@ class TSP(Base):
         # Make QUBO upper triangular matrix
         self.q_cost = np.triu(self.q_cost + np.tril(self.q_cost, k=-1).T + np.triu(self.q_cost).T) - np.diag(self.q_cost.diagonal())
 
-    def penalty_term(self, NUM_CITY, ALPHA):
+    def h_pen(self, NUM_CITY, ALPHA):
         # Calculate constraint term1 (1-hot of horizontal line)
         # Quadratic term
         for t in range(NUM_CITY):

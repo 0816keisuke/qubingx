@@ -32,11 +32,11 @@ class QAP(Base):
         self.spin_index = np.arange(NUM_FACTORY * NUM_FACTORY).reshape(NUM_FACTORY, NUM_FACTORY)
         np.set_printoptions(edgeitems=10) # Chenge the setting for printing numpy
 
-        self.cost_term(NUM_FACTORY)
-        self.penalty_term(NUM_FACTORY, ALPHA)
-        self.all_term()
+        self.h_cost(NUM_FACTORY)
+        self.h_pen(NUM_FACTORY, ALPHA)
+        self.h_all()
 
-    def cost_term(self, NUM_FACTORY):
+    def h_cost(self, NUM_FACTORY):
         # Quadratic term
         for i in range(NUM_FACTORY):
             for j in range(NUM_FACTORY):
@@ -50,7 +50,7 @@ class QAP(Base):
                         self.q_cost[idx_i, idx_j] += coef
         self.q_cost = np.triu(self.q_cost + np.tril(self.q_cost, k=-1).T + np.triu(self.q_cost).T) - np.diag(self.q_cost.diagonal())
 
-    def penalty_term(self, NUM_FACTORY, ALPHA):
+    def h_pen(self, NUM_FACTORY, ALPHA):
         # Constraint term1 (1-hot of horizontal line)
         # Quadratic term
         for i in range(NUM_FACTORY):

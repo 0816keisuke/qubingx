@@ -31,14 +31,14 @@ class NHot(Base):
         self.spin_index = np.arange(num_spin_row * num_spin_row).reshape(num_spin_row, num_spin_row)
         np.set_printoptions(edgeitems=10) # Chenge the setting for printing numpy
 
-        self.cost_term()
-        self.penalty_term(num_spin_row, hot_num, row_hot, col_hot, ALPHA)
-        self.all_term()
+        self.h_cost()
+        self.h_pen(num_spin_row, hot_num, row_hot, col_hot, ALPHA)
+        self.h_all()
 
-    def cost_term(self):
+    def h_cost(self):
         pass
 
-    def penalty_term(
+    def h_pen(
         self,
         num_spin_row,
         hot_num,

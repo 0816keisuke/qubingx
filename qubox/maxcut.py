@@ -18,11 +18,11 @@ class MaxCut(Base):
         self.adjacency_mtx = adjacency_mtx
         np.set_printoptions(edgeitems=10) # Chenge the setting for printing numpy
 
-        self.cost_term(NUM_VERTEX)
-        self.penalty_term()
-        self.all_term()
+        self.h_cost(NUM_VERTEX)
+        self.h_pen()
+        self.h_all()
 
-    def cost_term(self, NUM_VERTEX):
+    def h_cost(self, NUM_VERTEX):
         for i in range(NUM_VERTEX-1):
             for j in range(i+1, NUM_VERTEX):
                 w_ij = self.adjacency_mtx[i, j]
@@ -30,5 +30,5 @@ class MaxCut(Base):
                 self.q_cost[i, i] += -1 * w_ij
                 self.q_cost[j, j] += -1 * w_ij
 
-    def penalty_term(self):
+    def h_pen(self):
         pass

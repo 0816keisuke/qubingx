@@ -50,17 +50,17 @@ class MKP(Base):
             super().__init__(num_spin = num_spin)
         np.set_printoptions(edgeitems=10) # Chenge the setting for printing numpy
 
-        self.cost_term(NUM_ITEM, value_list)
-        self.penalty_term(encoding, dim, NUM_ITEM, weight_list, max_weight_list, num_slack_list, ALPHA)
-        self.all_term()
+        self.h_cost(NUM_ITEM, value_list)
+        self.h_pen(encoding, dim, NUM_ITEM, weight_list, max_weight_list, num_slack_list, ALPHA)
+        self.h_all()
 
-    def cost_term(self, NUM_ITEM, value_list):
+    def h_cost(self, NUM_ITEM, value_list):
         # Cost term
         for a in range(NUM_ITEM):
             coef = -1 * value_list[a]
             self.q_cost[a, a] += coef
 
-    def penalty_term(self, encoding, dim, NUM_ITEM, weight_list, max_weight_list, num_slack_list, ALPHA):
+    def h_pen(self, encoding, dim, NUM_ITEM, weight_list, max_weight_list, num_slack_list, ALPHA):
         if encoding == "one-hot":
             # At arbitrarily i-th dimension
             # H = \sum_d^Dim [ { \sum_(n=1)^(W_d) y_(d,n) - 1 }^2 + { \sum_(n=1)^(W_d) n y_(d,n) - \sum_(a=0)^(N-1) w_(d,a) x_a }^2 ]
