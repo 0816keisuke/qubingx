@@ -1,4 +1,5 @@
 import numpy as np
+
 from qubox.knapsack import Knapsack
 
 # https://tutorial.openjij.org/build/html/ja/008-KnapsackPyqubo.html
