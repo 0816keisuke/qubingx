@@ -1,13 +1,30 @@
-import numpy as np
 from abc import ABCMeta, abstractmethod
 
-class BaseQUBO(metaclass=ABCMeta):
-    def __init__(self, num_spin):
-        # QUBO matrix
+import numpy as np
+
+
+class Base(metaclass=ABCMeta):
+    def __init__(self, modeltype, num_spin):
+
+        if modeltype not in ["ISING", "QUBO"]:
+            error_msg = "Invalid model type. It should be 'ISING' or 'QUBO'."
+            raise KeyError(error_msg)
+        self.MODELTYPE = modeltype
+
         self.num_spin = num_spin
-        self.Q = np.zeros((self.num_spin, self.num_spin))
-        self.Q_cost = np.zeros((self.num_spin, self.num_spin))
-        self.Q_pen = np.zeros((self.num_spin, self.num_spin))
+
+        if self.MODELTYPE == "ISING":
+            self.J = np.zeros((self.num_spin, self.num_spin))
+            self.J_cost = np.zeros((self.num_spin, self.num_spin))
+            self.J_pen = np.zeros((self.num_spin, self.num_spin))
+            self.h = np.diag(self.J)
+            self.h_cost = np.diag(self.J_cost)
+            self.h_pen = np.diag(self.J_pen)
+
+        elif self.MODELTYPE == "QUBO":
+            self.Q = np.zeros((self.num_spin, self.num_spin))
+            self.Q_cost = np.zeros((self.num_spin, self.num_spin))
+            self.Q_pen = np.zeros((self.num_spin, self.num_spin))
 
         self.const = 0
         self.const_cost = 0
@@ -21,8 +38,11 @@ class BaseQUBO(metaclass=ABCMeta):
     def hamil_pen(self):
         pass
 
-    def h_all(self):
-        self.Q = self.Q_cost + self.Q_pen
+    def hamil_all(self):
+        if self.MODELTYPE == "ISING":
+            self.J = self.J_cost + self.J_pen
+        elif self.MODELTYPE == "QUBO":
+            self.Q = self.Q_cost + self.Q_pen
         self.const = self.const_cost + self.const_pen
 
     # モデル及びグループによって利用する行列を決定
