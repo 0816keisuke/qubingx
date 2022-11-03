@@ -45,7 +45,7 @@ class QAP(Base):
                         if coef == 0:
                             continue
                         self.Q_cost[idx_i, idx_j] += coef
-        self.Q_cost = np.triu(self.Q_cost) + np.tril(self.Q_cost).T - np.diag(self.Q_cost.diagonal())
+        self.Q_cost = np.triu(self.Q_cost) + np.tril(self.Q_cost).T - np.diag(np.diag(self.Q_cost))
 
     def hamil_pen(self, NUM_FACTORY, ALPHA):
         # Constraint term1 (1-hot of horizontal line)

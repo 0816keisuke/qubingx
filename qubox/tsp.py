@@ -40,7 +40,7 @@ class TSP(Base):
                         continue
                     self.Q_cost[idx_i, idx_j] += coef
         # Make QUBO upper triangular matrix
-        self.Q_cost = np.triu(self.Q_cost) + np.tril(self.Q_cost).T - np.diag(self.Q_cost.diagonal())
+        self.Q_cost = np.triu(self.Q_cost) + np.tril(self.Q_cost).T - np.diag(np.diag(self.Q_cost))
 
     def hamil_pen(self, NUM_CITY, ALPHA):
         # Calculate constraint term1 (1-hot of horizontal line)
