@@ -1,7 +1,7 @@
 import numpy as np
-from qubox.base import Base
+from qubox.base import BaseQUBO
 
-class NHot(Base):
+class NHot(BaseQUBO):
     def __init__(self,
                 num_spin_row,
                 hot_num=1,
@@ -55,15 +55,15 @@ class NHot(Base):
                         idx_i = self.spin_index[i, k]
                         idx_j = self.spin_index[i, l]
                         coef = 2
-                        self.q_pen[idx_i, idx_j] += ALPHA * coef
+                        self.Q_pen[idx_i, idx_j] += ALPHA * coef
             # Linear term
             for i in range(num_spin_row):
                 for k in range(num_spin_row):
                     idx = self.spin_index[i, k]
                     coef = 1 - 2 * hot_num
-                    self.q_pen[idx, idx] += ALPHA * coef
+                    self.Q_pen[idx, idx] += ALPHA * coef
             # Constant term
-            self.const_pen[0] += ALPHA * hot_num**2 * num_spin_row
+            self.const_pen += ALPHA * hot_num**2 * num_spin_row
 
         if col_hot:
             # Constraint term2 (1-hot of vertical line)
@@ -74,12 +74,12 @@ class NHot(Base):
                         idx_i = self.spin_index[i, k]
                         idx_j = self.spin_index[j, k]
                         coef = 2
-                        self.q_pen[idx_i, idx_j] += ALPHA * coef
+                        self.Q_pen[idx_i, idx_j] += ALPHA * coef
             # Linear term
             for k in range(num_spin_row):
                 for i in range(num_spin_row):
                     idx = self.spin_index[i, k]
                     coef = 1 - 2 * hot_num
-                    self.q_pen[idx, idx] += ALPHA * coef
+                    self.Q_pen[idx, idx] += ALPHA * coef
             # Constant term
-            self.const_pen[0] += ALPHA * hot_num**2 * num_spin_row
+            self.const_pen += ALPHA * hot_num**2 * num_spin_row

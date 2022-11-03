@@ -1,17 +1,17 @@
 import numpy as np
 from abc import ABCMeta, abstractmethod
 
-class Base(metaclass=ABCMeta):
+class BaseQUBO(metaclass=ABCMeta):
     def __init__(self, num_spin):
         # QUBO matrix
         self.num_spin = num_spin
-        self.q_all = np.zeros((self.num_spin, self.num_spin))
-        self.q_cost = np.zeros((self.num_spin, self.num_spin))
-        self.q_pen = np.zeros((self.num_spin, self.num_spin))
+        self.Q = np.zeros((self.num_spin, self.num_spin))
+        self.Q_cost = np.zeros((self.num_spin, self.num_spin))
+        self.Q_pen = np.zeros((self.num_spin, self.num_spin))
 
-        self.const_all = np.zeros((1))
-        self.const_cost = np.zeros((1))
-        self.const_pen = np.zeros((1))
+        self.const = 0
+        self.const_cost = 0
+        self.const_pen = 0
 
     @abstractmethod
     def h_cost(self):
@@ -22,8 +22,8 @@ class Base(metaclass=ABCMeta):
         pass
 
     def h_all(self):
-        self.q_all = self.q_cost + self.q_pen
-        self.const_all = self.const_cost + self.const_pen
+        self.Q = self.Q_cost + self.Q_pen
+        self.const = self.const_cost + self.const_pen
 
     # Convert QUBO-model and coefficient to list
     def to_list(self, Q, const=0):

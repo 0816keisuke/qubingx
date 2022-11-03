@@ -1,7 +1,7 @@
 import numpy as np
-from qubox.base import Base
+from qubox.base import BaseQUBO
 
-class TSP(Base):
+class TSP(BaseQUBO):
     def __init__(self,
                 dist_mtx,
                 ALPHA=1
@@ -20,7 +20,6 @@ class TSP(Base):
         self.dist_mtx = dist_mtx
         super().__init__(num_spin = NUM_CITY * NUM_CITY)
         self.spin_index = np.arange(NUM_CITY * NUM_CITY).reshape(NUM_CITY, NUM_CITY)
-        np.set_printoptions(edgeitems=10) # Chenge the setting for printing numpy
 
         self.h_cost(NUM_CITY)
         self.h_pen(NUM_CITY, ALPHA)
@@ -40,9 +39,9 @@ class TSP(Base):
                     coef  = self.dist_mtx[u, v]
                     if coef == 0:
                         continue
-                    self.q_cost[idx_i, idx_j] += coef
+                    self.Q_cost[idx_i, idx_j] += coef
         # Make QUBO upper triangular matrix
-        self.q_cost = np.triu(self.q_cost + np.tril(self.q_cost, k=-1).T + np.triu(self.q_cost).T) - np.diag(self.q_cost.diagonal())
+        self.Q_cost = np.triu(self.Q_cost) + np.tril(self.Q_cost).T - np.diag(self.Q_cost.diagonal())
 
     def h_pen(self, NUM_CITY, ALPHA):
         # Calculate constraint term1 (1-hot of horizontal line)
@@ -53,15 +52,15 @@ class TSP(Base):
                     idx_i = self.spin_index[t, u]
                     idx_j = self.spin_index[t, v]
                     coef = 2
-                    self.q_pen[idx_i, idx_j] += ALPHA * coef
+                    self.Q_pen[idx_i, idx_j] += ALPHA * coef
         # Linear term
         for t in range(NUM_CITY):
             for u in range(NUM_CITY):
                 idx = self.spin_index[t, u]
                 coef = -1
-                self.q_pen[idx, idx] += ALPHA * coef
+                self.Q_pen[idx, idx] += ALPHA * coef
         # Constant term
-        self.const_pen[0] += ALPHA * NUM_CITY
+        self.const_pen += ALPHA * NUM_CITY
 
         # Calculate constraint term2 (1-hot of vertical line)
         # Quadratic term
@@ -71,12 +70,12 @@ class TSP(Base):
                     idx_i = self.spin_index[t, u]
                     idx_j = self.spin_index[tt, u]
                     coef = 2
-                    self.q_pen[idx_i, idx_j] += ALPHA * coef
+                    self.Q_pen[idx_i, idx_j] += ALPHA * coef
         # Linear term
         for u in range(NUM_CITY):
             for t in range(NUM_CITY):
                 idx = self.spin_index[t, u]
                 coef = -1
-                self.q_pen[idx, idx] += ALPHA * coef
+                self.Q_pen[idx, idx] += ALPHA * coef
         # Constant term
-        self.const_pen[0] += ALPHA * NUM_CITY
+        self.const_pen += ALPHA * NUM_CITY

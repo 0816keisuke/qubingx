@@ -1,7 +1,7 @@
 import numpy as np
-from qubox.base import Base
+from qubox.base import BaseQUBO
 
-class SlotPlacement(Base):
+class SlotPlacement(BaseQUBO):
     def __init__(self,
                 wire_mtx,
                 dist_mtx,
@@ -32,7 +32,6 @@ class SlotPlacement(Base):
         self.dist_mtx = dist_mtx
         super().__init__(num_spin = NUM_ITEM * NUM_SLOT)
         self.spin_index = np.arange(NUM_ITEM * NUM_SLOT).reshape(NUM_ITEM, NUM_SLOT)
-        np.set_printoptions(edgeitems=10) # Chenge the setting for printing numpy
 
         self.h_cost(NUM_ITEM, NUM_SLOT)
         self.h_pen(NUM_ITEM, NUM_SLOT, ALPHA, BETA)
@@ -49,9 +48,9 @@ class SlotPlacement(Base):
                         coef = self.wire_mtx[i, j] * self.dist_mtx[a, b] / 2
                         if coef == 0:
                             continue
-                        self.q_cost[idx_i, idx_j] += coef
+                        self.Q_cost[idx_i, idx_j] += coef
         # Make QUBO upper triangular matrix
-        self.q_cost = np.triu(self.q_cost + np.tril(self.q_cost, k=-1).T + np.triu(self.q_cost).T) - np.diag(self.q_cost.diagonal())
+        self.Q_cost = np.triu(self.Q_cost) + np.tril(self.Q_cost).T - np.diag(self.Q_cost.diagonal())
 
     def h_pen(self, NUM_ITEM, NUM_SLOT, ALPHA, BETA):
         # Calculate constraint term1: item assignment constraint
@@ -63,15 +62,15 @@ class SlotPlacement(Base):
                     idx_i = self.spin_index[i, a]
                     idx_j = self.spin_index[i, b]
                     coef = 2
-                    self.q_pen[idx_i, idx_j] += ALPHA * coef
+                    self.Q_pen[idx_i, idx_j] += ALPHA * coef
         # Linear term
         for i in range(NUM_ITEM):
             for a in range(NUM_SLOT):
                 idx = self.spin_index[i, a]
                 coef = -1
-                self.q_pen[idx, idx] += ALPHA * coef
+                self.Q_pen[idx, idx] += ALPHA * coef
         # Constant term
-        self.const_pen[0] = ALPHA * NUM_ITEM
+        self.const_pen = ALPHA * NUM_ITEM
 
         # Calculate constraint term2: slot assignment constraint
         # (Constraint of spin-matrix horizontal line)
@@ -82,4 +81,4 @@ class SlotPlacement(Base):
                     idx_i = self.spin_index[i, a]
                     idx_j = self.spin_index[j, a]
                     coef = 2
-                    self.q_pen[idx_i, idx_j] += BETA * coef
+                    self.Q_pen[idx_i, idx_j] += BETA * coef
