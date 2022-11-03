@@ -6,10 +6,8 @@ import numpy as np
 class Base(metaclass=ABCMeta):
     def __init__(self, modeltype, num_spin):
 
-        if modeltype not in ["ISING", "QUBO"]:
-            error_msg = "Invalid model type. It should be 'ISING' or 'QUBO'."
-            raise KeyError(error_msg)
         self.MODELTYPE = modeltype
+        self.__check_model_name__()
 
         self.num_spin = num_spin
 
@@ -45,7 +43,13 @@ class Base(metaclass=ABCMeta):
             self.Q = self.Q_cost + self.Q_pen
         self.const = self.const_cost + self.const_pen
 
-    # モデル及びグループによって利用する行列を決定
+    # モデル名のチェック
+    def __check_model_name__(self):
+        if self.MODELTYPE not in ["ISING", "QUBO"]:
+            error_msg = "Invalid model type. It should be 'ISING' or 'QUBO'."
+            raise KeyError(error_msg)
+
+    # モデル(ISING/QUBO)及びグループ(None(:=all)/cost/pen)によって利用する行列を決定
     def __matrix__(self, group):
         if self.MODELTYPE == "ISING":
             if group is None:
@@ -66,7 +70,7 @@ class Base(metaclass=ABCMeta):
                 raise KeyError(erro_msg)
         return mtx
 
-    # モデル及びグループによって利用するモデルの定数を決定
+    # モデル(ISING/QUBO)及びグループ(None(:=all)/cost/pen)によって利用する定数を決定
     def __constant__(self, group):
         if self.MODELTYPE == "ISING":
             if group is None:
@@ -168,11 +172,18 @@ class Base(metaclass=ABCMeta):
         const = self.__constant__(group)
 
         if self.MODELTYPE == "ISING":
-            energy = int(np.dot(np.dot(x, np.triu(mtx, k=1)), x)) + np.dot(x, np.diag(mtx))
+            energy = int(np.dot(np.dot(x, np.triu(mtx, k=1)), x)) + np.dot(x, np.diag(mtx) + const)
         elif self.MODELTYPE == "QUBO":
             energy = int(np.dot(np.dot(x, mtx), x) + const)
 
         return energy
+
+    def show(self, group=None):
+        import plotly.express as px
+
+        mtx = self.__mtx__(group)
+        fig = px.imshow(mtx)
+        fig.show()
 
     def qubo_to_ising(self, qubo):
         size = qubo.shape[0]
