@@ -25,17 +25,17 @@ class Base(metaclass=ABCMeta):
         self.q_all = self.q_cost + self.q_pen
         self.const_all = self.const_cost + self.const_pen
 
-    # Make QUBO index and coefficient list
+    # Convert QUBO-model and coefficient to list
     def to_list(self, Q, const=0):
         Q_list = []
-        for i in range(self.num_spin):
-            for j in range(i, self.num_spin):
+        for i in range(len(Q)):
+            for j in range(i, len(Q)):
                 coef = Q[i, j]
                 if not coef == 0:
                     Q_list.append([i, j, coef])
         if const != 0:
-            Q_list.append([-1, -1, const])
-        return np.array(Q_list)
+            Q_list.append([-1, -1, int(const)])
+        return Q_list
 
     # def convert_qubo_to_ising(self):
     #     self.const_ising += 4 * self.const_qubo # Multiply by 4 to convert to integer, as appearance of fraction 1/4
