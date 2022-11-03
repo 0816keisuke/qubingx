@@ -14,11 +14,11 @@ class BaseQUBO(metaclass=ABCMeta):
         self.const_pen = 0
 
     @abstractmethod
-    def h_cost(self):
+    def hamil_cost(self):
         pass
 
     @abstractmethod
-    def h_pen(self):
+    def hamil_pen(self):
         pass
 
     def h_all(self):
