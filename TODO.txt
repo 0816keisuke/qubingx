@@ -15,3 +15,7 @@ Multi-Dimentional Knapsack Problem
 # Utility
 util/analyzer ... analyze violation of penalty term.
 util/graphconversion ... json <-> adjacency <-> list.
+
+# MISC
+- raise an error instead of exit()
+- Stop using spin_index
