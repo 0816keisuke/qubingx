@@ -168,7 +168,7 @@ class Base(metaclass=ABCMeta):
 
     # Calculate the hamiltonian's energy
     def energy(self, x, group=None):
-        mtx = self.__mtx__(group)
+        mtx = self.__matrix__(group)
         const = self.__constant__(group)
 
         if self.MODELTYPE == "ISING":
@@ -181,7 +181,7 @@ class Base(metaclass=ABCMeta):
     def show(self, group=None):
         import plotly.express as px
 
-        mtx = self.__mtx__(group)
+        mtx = self.__matrix__(group)
         fig = px.imshow(mtx)
         fig.show()
 
