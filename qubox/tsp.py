@@ -4,7 +4,7 @@ from qubox.base import Base
 
 
 class TSP(Base):
-    def __init__(self, dist_mtx, ALPHA=1):
+    def __init__(self, dist_mtx, ALPHA=1, mtx="upper"):
         # Check tye type of Arguments
         if isinstance(dist_mtx, list):
             dist_mtx = np.array(dist_mtx)
@@ -17,11 +17,13 @@ class TSP(Base):
 
         NUM_CITY = len(dist_mtx)
         self.dist_mtx = dist_mtx
-        super().__init__(modeltype="QUBO", num_spin=NUM_CITY * NUM_CITY)
+        super().__init__(modeltype="QUBO", mtx=mtx, num_spin=NUM_CITY * NUM_CITY)
+        self.__check_mtx_type__()
         self.spin_index = np.arange(NUM_CITY * NUM_CITY).reshape(NUM_CITY, NUM_CITY)
 
         self.h_cost(NUM_CITY)
         self.hamil_pen(NUM_CITY, ALPHA)
+        self.__upper2sym__() # Execute if mtx=="sym"
         self.hamil_all()
 
     def h_cost(self, NUM_CITY):

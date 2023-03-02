@@ -4,7 +4,7 @@ from qubox.base import Base
 
 
 class MaxCut(Base):
-    def __init__(self, adjacency_mtx):
+    def __init__(self, adjacency_mtx, mtx="upper"):
         # Check tye type of Arguments
         if isinstance(adjacency_mtx, list):
             adjacency_mtx = np.array(adjacency_mtx)
@@ -16,11 +16,13 @@ class MaxCut(Base):
             exit()
 
         NUM_VERTEX = len(adjacency_mtx)
-        super().__init__(modeltype="QUBO", num_spin=NUM_VERTEX)
+        super().__init__(modeltype="QUBO", mtx=mtx, num_spin=NUM_VERTEX)
+        self.__check_mtx_type__()
         self.adjacency_mtx = adjacency_mtx
 
         self.hamil_cost(NUM_VERTEX)
         self.hamil_pen()
+        self.__upper2sym__() # Execute if mtx=="sym"
         self.hamil_all()
 
     def hamil_cost(self, NUM_VERTEX):

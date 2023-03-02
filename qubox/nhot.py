@@ -4,7 +4,7 @@ from qubox.base import Base
 
 
 class NHot(Base):
-    def __init__(self, num_spin_row, hot_num=1, row_hot=True, col_hot=True, ALPHA=1):
+    def __init__(self, num_spin_row, hot_num=1, row_hot=True, col_hot=True, ALPHA=1, mtx="upper"):
         # Check tye type of Arguments
         if not isinstance(num_spin_row, int):
             print("The type of the argument 'num_spin_row' is WRONG.")
@@ -23,11 +23,13 @@ class NHot(Base):
             print("It shoud be bool.")
             exit()
 
-        super().__init__(modeltype="QUBO", num_spin=num_spin_row * num_spin_row)
+        super().__init__(modeltype="QUBO", mtx=mtx, num_spin=num_spin_row * num_spin_row)
+        self.__check_mtx_type__()
         self.spin_index = np.arange(num_spin_row * num_spin_row).reshape(num_spin_row, num_spin_row)
 
         self.h_cost()
         self.hamil_pen(num_spin_row, hot_num, row_hot, col_hot, ALPHA)
+        self.__upper2sym__() # Execute if mtx=="sym"
         self.hamil_all()
 
     def h_cost(self):

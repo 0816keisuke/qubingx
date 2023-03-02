@@ -4,7 +4,7 @@ from qubox.base import Base
 
 
 class SlotPlacement(Base):
-    def __init__(self, wire_mtx, dist_mtx, ALPHA=1, BETA=1):
+    def __init__(self, wire_mtx, dist_mtx, ALPHA=1, BETA=1, mtx="upper"):
         # Check tye type of Arguments
         if isinstance(wire_mtx, list):
             wire_mtx = np.array(wire_mtx)
@@ -27,11 +27,13 @@ class SlotPlacement(Base):
         NUM_SLOT = len(dist_mtx)
         self.wire_mtx = wire_mtx
         self.dist_mtx = dist_mtx
-        super().__init__(modeltype="QUBO", num_spin=NUM_ITEM * NUM_SLOT)
+        super().__init__(modeltype="QUBO", mtx=mtx, num_spin=NUM_ITEM * NUM_SLOT)
+        self.__check_mtx_type__()
         self.spin_index = np.arange(NUM_ITEM * NUM_SLOT).reshape(NUM_ITEM, NUM_SLOT)
 
         self.hamil_cost(NUM_ITEM, NUM_SLOT)
         self.hamil_pen(NUM_ITEM, NUM_SLOT, ALPHA, BETA)
+        self.__upper2sym__() # Execute if mtx=="sym"
         self.hamil_all()
 
     def hamil_cost(self, NUM_ITEM, NUM_SLOT):

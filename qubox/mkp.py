@@ -6,7 +6,7 @@ from qubox.base import Base
 
 
 class MKP(Base):
-    def __init__(self, value_list, weight_list, max_weight_list, dim, encoding="one-hot", ALPHA=1):
+    def __init__(self, value_list, weight_list, max_weight_list, dim, encoding="one-hot", ALPHA=1, mtx="upper"):
         # Check tye type of Arguments
         if isinstance(weight_list, list):
             weight_list = np.array(weight_list)
@@ -39,17 +39,19 @@ class MKP(Base):
 
         NUM_ITEM = len(value_list)
         if encoding == "one-hot":
-            super().__init__(modeltype="QUBO", num_spin=len(value_list) + sum(max_weight_list))
+            super().__init__(modeltype="QUBO", mtx=mtx, num_spin=len(value_list) + sum(max_weight_list))
         elif encoding == "log":
             num_slack_list = [
                 0 if dim_i == -1 else math.floor(math.log(max_weight_list[dim_i] - 1, 2)) + 1
                 for dim_i in range(-1, dim)
             ]
             num_spin = len(value_list) + sum(num_slack_list)
-            super().__init__(modeltype="QUBO", num_spin=num_spin)
+            super().__init__(modeltype="QUBO", mtx=mtx, num_spin=num_spin)
+        self.__check_mtx_type__()
 
         self.hamil_cost(NUM_ITEM, value_list)
         self.hamil_pen(encoding, dim, NUM_ITEM, weight_list, max_weight_list, num_slack_list, ALPHA)
+        self.__upper2sym__() # Execute if mtx=="sym"
         self.hamil_all()
 
     def hamil_cost(self, NUM_ITEM, value_list):

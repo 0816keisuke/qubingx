@@ -4,10 +4,13 @@ import numpy as np
 
 
 class Base(metaclass=ABCMeta):
-    def __init__(self, modeltype, num_spin):
+    def __init__(self, modeltype, mtx="upper", num_spin=None):
 
         self.MODELTYPE = modeltype
         self.__check_model_name__()
+
+        self.MTXTYPE = mtx
+        self.__check_mtx_type__()
 
         self.num_spin = num_spin
 
@@ -49,8 +52,22 @@ class Base(metaclass=ABCMeta):
             error_msg = "Invalid model type. It should be 'ISING' or 'QUBO'."
             raise KeyError(error_msg)
 
-    # モデル(ISING/QUBO)及びグループ(None(:=all)/cost/pen)によって利用する行列を決定
-    def __matrix__(self, group):
+    # 行列形式(上三角行列/対称行列)のチェック
+    def __check_mtx_type__(self):
+        if self.MTXTYPE not in ["upper", "sym"]:
+            error_msg = "Invalid matrix type. It should be 'upper' or 'sym'."
+            raise KeyError(error_msg)
+
+    def __upper2sym__(self):
+        if self.MODELTYPE == "ISING" and self.MTXTYPE == "sym":
+            self.J_cost = (np.triu(self.J_cost) + np.triu(self.J_cost).T)/2
+            self.J_pen = (np.triu(self.J_pen) + np.triu(self.J_pen).T)/2
+        if self.MODELTYPE == "QUBO" and self.MTXTYPE == "sym":
+            self.Q_cost = (np.triu(self.Q_cost) + np.triu(self.Q_cost).T)/2
+            self.Q_pen = (np.triu(self.Q_pen) + np.triu(self.Q_pen).T)/2
+
+    # モデルタイプ(ISING/QUBO)及びグループ(None(:=all)/cost/pen)によってどのQUBO行列を利用するかを決定
+    def __select_mtx_group__(self, group=None):
         if self.MODELTYPE == "ISING":
             if group is None:
                 mtx = self.J
@@ -70,8 +87,8 @@ class Base(metaclass=ABCMeta):
                 raise KeyError(erro_msg)
         return mtx
 
-    # モデル(ISING/QUBO)及びグループ(None(:=all)/cost/pen)によって利用する定数を決定
-    def __constant__(self, group):
+    # モデル(ISING/QUBO)及びグループ(None(:=all)/cost/pen)によってどの定数を利用するかを決定
+    def __select_constant_group__(self, group=None):
         if self.MODELTYPE == "ISING":
             if group is None:
                 const = self.const
@@ -93,7 +110,7 @@ class Base(metaclass=ABCMeta):
 
     # Convert Ising/QUBO-model to list
     def to_list(self, group, union=True):
-        mtx = self.__matrix__(group)
+        mtx = self.__select_mtx_group__(group)
 
         Q = []
         for idx_i in range(self.num_spin):
@@ -105,7 +122,7 @@ class Base(metaclass=ABCMeta):
 
     # Convert Ising/QUBO-model to dict
     def to_dict(self, group=None, union=True):
-        mtx = self.__matrix__(group)
+        mtx = self.__select_mtx_group__(group)
 
         # Merge linear & quadratic term
         if union:
@@ -155,7 +172,7 @@ class Base(metaclass=ABCMeta):
         import dimod
 
         linear, quadratic = self.to_dict(group=group, union=False)
-        const = self.__constant__(group)
+        const = self.__select_constant_group__(group)
 
         if self.MODELTYPE == "ISING":
             vartype = dimod.Vartype.SPIN
@@ -168,8 +185,8 @@ class Base(metaclass=ABCMeta):
 
     # Calculate the hamiltonian's energy
     def energy(self, x, group=None):
-        mtx = self.__matrix__(group)
-        const = self.__constant__(group)
+        mtx = self.__select_mtx_group__(group)
+        const = self.__select_constant_group__(group)
 
         if self.MODELTYPE == "ISING":
             energy = int(np.dot(np.dot(x, np.triu(mtx, k=1)), x)) + np.dot(x, np.diag(mtx) + const)
@@ -181,7 +198,7 @@ class Base(metaclass=ABCMeta):
     def show(self, group=None):
         import plotly.express as px
 
-        mtx = self.__matrix__(group)
+        mtx = self.__select_mtx_group__(group)
         fig = px.imshow(mtx)
         fig.show()
 

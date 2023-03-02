@@ -6,7 +6,7 @@ from qubox.base import Base
 
 
 class Knapsack(Base):
-    def __init__(self, value_list, weight_list, max_weight, encoding="one-hot", ALPHA=1):
+    def __init__(self, value_list, weight_list, max_weight, encoding="one-hot", ALPHA=1, mtx="upper"):
         # Check tye type of Arguments
         if isinstance(weight_list, list):
             weight_list = np.array(weight_list)
@@ -35,12 +35,14 @@ class Knapsack(Base):
 
         NUM_ITEM = len(value_list)
         if encoding == "one-hot":
-            super().__init__(modeltype="QUBO", num_spin=len(value_list) + max_weight)
+            super().__init__(modeltype="QUBO", mtx=mtx, num_spin=len(value_list) + max_weight)
         elif encoding == "log":
-            super().__init__(modeltype="QUBO", num_spin=len(value_list) + math.floor(math.log(max_weight - 1, 2)) + 1)
+            super().__init__(modeltype="QUBO", mtx=mtx, num_spin=len(value_list) + math.floor(math.log(max_weight - 1, 2)) + 1)
+        self.__check_mtx_type__()
 
         self.hamil_cost(NUM_ITEM, value_list)
         self.hamil_pen(encoding, NUM_ITEM, weight_list, max_weight, ALPHA)
+        self.__upper2sym__() # Execute if mtx=="sym"
         self.hamil_all()
 
     def hamil_cost(self, NUM_ITEM, value_list):

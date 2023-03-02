@@ -4,7 +4,7 @@ from qubox.base import Base
 
 
 class QAP(Base):
-    def __init__(self, weight_mtx, dist_mtx, ALPHA=1):
+    def __init__(self, weight_mtx, dist_mtx, ALPHA=1, mtx="upper"):
         # Check tye type of Arguments
         if isinstance(weight_mtx, list):
             weight_mtx = np.array(weight_mtx)
@@ -26,11 +26,13 @@ class QAP(Base):
         NUM_FACTORY = len(weight_mtx)
         self.weight_mtx = weight_mtx
         self.dist_mtx = dist_mtx
-        super().__init__(modeltype="QUBO", num_spin=NUM_FACTORY * NUM_FACTORY)
+        super().__init__(modeltype="QUBO", mtx=mtx, num_spin=NUM_FACTORY * NUM_FACTORY)
+        self.__check_mtx_type__()
         self.spin_index = np.arange(NUM_FACTORY * NUM_FACTORY).reshape(NUM_FACTORY, NUM_FACTORY)
 
         self.hamil_cost(NUM_FACTORY)
         self.hamil_pen(NUM_FACTORY, ALPHA)
+        self.__upper2sym__() # Execute if mtx=="sym"
         self.hamil_all()
 
     def hamil_cost(self, NUM_FACTORY):
