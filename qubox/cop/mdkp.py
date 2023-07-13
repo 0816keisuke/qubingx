@@ -1,67 +1,90 @@
 import math
 
+from typing import List
 import numpy as np
 
-from qubox.base import Base
+from qubox.cop.base import Matrix, Model, Encoding
+from qubox.cop.qubo import QUBO
 
 
-class MKP(Base):
-    def __init__(self, value_list, weight_list, max_weight_list, dim, encoding="one-hot", ALPHA=1, mtx="upper"):
-        # Check tye type of Arguments
-        if isinstance(weight_list, list):
-            weight_list = np.array(weight_list)
-        elif isinstance(weight_list, np.ndarray):
-            pass
-        else:
-            print("The type of the argument 'weight_list' is WRONG.")
-            print("It shoud be list/numpy.ndarray.")
-            exit()
-        if isinstance(value_list, list):
-            value_list = np.array(value_list)
-        elif isinstance(value_list, np.ndarray):
-            pass
-        else:
-            print("The type of the argument 'value_list' is WRONG.")
-            print("It shoud be list/numpy.ndarray.")
-            exit()
-        if isinstance(max_weight_list, list):
-            max_weight_list = np.array(max_weight_list)
-        elif isinstance(max_weight_list, np.ndarray):
-            pass
-        else:
-            print("The type of the argument 'max_weight_list' is WRONG.")
-            print("It shoud be list/numpy.ndarray.")
-            exit()
-        if encoding not in ["one-hot", "log"]:
-            print("The argument 'encoding' is WRONG.")
-            print("It shoud be one-hot/log.")
-            exit()
-
+class MDKP(QUBO):
+    def __init__(
+        self,
+        value_list: List[int | float] | np.ndarray,
+        weight_list: List[List[int | float]] | np.ndarray,
+        max_weight_list: List[int | float] | np.ndarray,
+        dim,
+        encoding: str = "1-hot",
+        ALPHA: float = 1,
+        MODEL: str = "QUBO",
+        MATRIX: str = "upper",
+    ):
+        self.encoding = Encoding(encoding)
         NUM_ITEM = len(value_list)
-        if encoding == "one-hot":
-            super().__init__(modeltype="QUBO", mtx=mtx, num_spin=len(value_list) + sum(max_weight_list))
-        elif encoding == "log":
+
+        if isinstance(value_list, np.ndarray):
+            value_list = value_list.to_list()
+        if isinstance(weight_list, np.ndarray):
+            weight_list = weight_list.to_list()
+        if isinstance(max_weight_list, np.ndarray):
+            max_weight_list = max_weight_list.to_list()
+
+        if encoding == "1-hot":
+            num_spin = NUM_ITEM + sum(max_weight_list)
+            super().__init__(
+                MODEL=Model(MODEL),
+                MATRIX=Matrix(MATRIX),
+                num_spin=NUM_ITEM + sum(max_weight_list),
+                q_all=np.zeros((num_spin, num_spin)),
+                q_obj=np.zeros((num_spin, num_spin)),
+                q_constraint=np.zeros((num_spin, num_spin)),
+                const_all=0,
+                const_obj=0,
+                const_constraint=0,
+            )
+        elif encoding == "binary":
             num_slack_list = [
-                0 if dim_i == -1 else math.floor(math.log(max_weight_list[dim_i] - 1, 2)) + 1
+                0
+                if dim_i == -1
+                else math.floor(math.log(max_weight_list[dim_i] - 1, 2)) + 1
                 for dim_i in range(-1, dim)
             ]
             num_spin = len(value_list) + sum(num_slack_list)
-            super().__init__(modeltype="QUBO", mtx=mtx, num_spin=num_spin)
-        self.__check_mtx_type__()
+            super().__init__(
+                MODEL=Model(MODEL),
+                MATRIX=Matrix(MATRIX),
+                num_spin=num_spin,
+                q_all=np.zeros((num_spin, num_spin)),
+                q_obj=np.zeros((num_spin, num_spin)),
+                q_constraint=np.zeros((num_spin, num_spin)),
+                const_all=0,
+                const_obj=0,
+                const_constraint=0,
+            )
 
-        self.hamil_cost(NUM_ITEM, value_list)
-        self.hamil_pen(encoding, dim, NUM_ITEM, weight_list, max_weight_list, num_slack_list, ALPHA)
-        self.__upper2sym__() # Execute if mtx=="sym"
-        self.hamil_all()
+        self.h_obj(NUM_ITEM, value_list)
+        self.h_constraint(
+            encoding, dim, NUM_ITEM, weight_list, max_weight_list, num_slack_list, ALPHA
+        )
+        self.h_all()
 
-    def hamil_cost(self, NUM_ITEM, value_list):
+    def h_obj(self, NUM_ITEM, value_list):
         # Cost term
         for a in range(NUM_ITEM):
             coef = -1 * value_list[a]
-            self.Q_cost[a, a] += coef
+            self.q_obj[a, a] += coef
 
-    def hamil_pen(self, encoding, dim, NUM_ITEM, weight_list, max_weight_list, num_slack_list, ALPHA):
-        if encoding == "one-hot":
+    def h_constraint(
+        self,
+        encoding,
+        dim,
+        NUM_ITEM,
+        weight_list,
+        max_weight_list,
+        num_slack_list,
+        ALPHA,
+    ):
+        if encoding == "1-hot":
             # At arbitrarily i-th dimension
             # H = \sum_d^Dim [ { \sum_(n=1)^(W_d) y_(d,n) - 1 }^2 + { \sum_(n=1)^(W_d) n y_(d,n) - \sum_(a=0)^(N-1) w_(d,a) x_a }^2 ]
             pass
@@ -75,22 +98,21 @@ class MKP(Base):
                 num_binary = math.floor(math.log(max_weight_list[dim_i] - 1, 2))
 
                 # (W_d)^2
-                self.const_pen += ALPHA * max_weight_list[dim_i] * max_weight_list[dim_i]
+                self.const_pen += (
+                    ALPHA * max_weight_list[dim_i] * max_weight_list[dim_i]
+                )
 
                 # -2 * W_d * ( \sum_(a=0)^(N-1) w_(d,a) x_a )
                 for a in range(NUM_ITEM):
                     coef = -2 * max_weight_list[dim_i] * weight_list[dim_i, a]
                     idx = a
-                    # print(f"-2 * {max_weight_list[dim_i]} * {weight_list[dim_i, a]} * x_{a} -> {coef}")
-                    self.Q_pen[idx, idx] += ALPHA * coef
+                    self.q_constraint[idx, idx] += ALPHA * coef
 
                 # -2 * W_d * ( \sum_(n=0)^([log_2((W_d)-1)]) 2^n y_(d,n) )
                 for n in range(num_binary + 1):
                     coef = -2 * max_weight_list[dim_i] * pow(2, n)
                     idx = NUM_ITEM + sum(num_slack_list[: dim_i + 1]) + n
-                    # print(idx)
-                    # print(f"-2 * {max_weight_list[dim_i]} * {pow(2, n)} * y_{dim_i, n} -> {coef}")
-                    self.Q_pen[idx, idx] += ALPHA * coef
+                    self.q_constraint[idx, idx] += ALPHA * coef
 
                 #   ( \sum_(a=0)^(N-1) w_(d,a) x_a )^2
                 # = \sum_(a=0)^(N-2) \sum_(b=a+1)^(N-1) 2 * w_(d,a) w_(d,b) x_a x_b + \sum_(a=0)^(N-1) (w_(d,a))^2 x_a
@@ -100,14 +122,12 @@ class MKP(Base):
                         coef = 2 * weight_list[dim_i, a] * weight_list[dim_i, b]
                         idx_i = a
                         idx_j = b
-                        # print(f"2 * {weight_list[dim_i, a]} * {weight_list[dim_i, b]} * x_{a} * x_{b} -> {coef}")
-                        self.Q_pen[idx_i, idx_j] += ALPHA * coef
+                        self.q_constraint[idx_i, idx_j] += ALPHA * coef
                 # Linear term
                 for a in range(NUM_ITEM):
                     coef = weight_list[dim_i, a] ** 2
                     idx = a
-                    # print(f"{weight_list[dim_i, a]}^2 * x_{a} -> {coef}")
-                    self.Q_pen[idx, idx] += ALPHA * coef
+                    self.q_constraint[idx, idx] += ALPHA * coef
 
                 #   2 * ( \sum_(a=0)^(N-1) w_(d,a) x_a) * ( \sum_(n=0)^([log_2((W_d)-1)]) 2^n y_(d,n) )
                 # = \sum_(a=0)^(N-1) \sum_(n=0)^([log_2((W_d)-1)]) w_(d,a) 2^(n+1) x_a y_(d,n)
@@ -117,8 +137,7 @@ class MKP(Base):
                         coef = weight_list[dim_i, a] * pow(2, n + 1)
                         idx_i = a
                         idx_j = NUM_ITEM + sum(num_slack_list[: dim_i + 1]) + n
-                        # print(f"2 * {weight_list[dim_i, a]} * {pow(2, n+1)} * x_{a} * y_{dim_i, n} -> {coef}")
-                        self.Q_pen[idx_i, idx_j] += ALPHA * coef
+                        self.q_constraint[idx_i, idx_j] += ALPHA * coef
 
                 #   ( \sum_(n=0)^([log_2((W_d)-1)]) 2^n y_(d,n) )^2
                 # = \sum_(n=0)^([log_2((W_d)-1)]-1) \sum_(m=n+1)^([log_2((W_d)-1)]) 2 * 2^n 2^m y_(d,n) y_(d,m) + \sum_(n=0)^([log_2((W_d)-1)]) (2^n)^2 y_(d,n)
@@ -128,11 +147,9 @@ class MKP(Base):
                         coef = 2 * pow(2, n) * pow(2, m)
                         idx_i = NUM_ITEM + sum(num_slack_list[: dim_i + 1]) + n
                         idx_j = NUM_ITEM + sum(num_slack_list[: dim_i + 1]) + m
-                        # print(f"2 * {pow(2, n)} * {pow(2, m)} * y_{dim_i, n} * y_{dim_i, m} -> {coef}")
-                        self.Q_pen[idx_i, idx_j] += ALPHA * coef
+                        self.q_constraint[idx_i, idx_j] += ALPHA * coef
                 # Linear term
                 for n in range(num_binary + 1):
                     coef = pow(2, n) ** 2
                     idx = NUM_ITEM + sum(num_slack_list[: dim_i + 1]) + n
-                    self.Q_pen[idx, idx] += ALPHA * coef
-                    # print(f"{pow(2, n)**2} * y_{dim_i, n}-> {coef}")
+                    self.q_constraint[idx, idx] += ALPHA * coef
