@@ -1,43 +1,31 @@
-[tool.poetry]
+
+[project]
 name = "qubox"
 version = "0.1.0"
 description = ""
-authors = ["Keisuke Fukada"]
+authors = [
+    {name = "keisuke.fukada", email = "keisukefukada.0816@gmail.com"},
+]
+dependencies = [
+    "numpy>=1.25.1",
+    "dimod>=0.12.10",
+    "plotly>=5.15.0",
+]
+requires-python = ">=3.9"
 readme = "README.md"
-
-[tool.poetry.dependencies]
-python = "^3.9"
-numpy = "^1.24.2"
-plotly = "^5.13.1"
-dimod = "^0.12.3"
-
-
-[tool.poetry.group.dev.dependencies]
-isort = "^5.12.0"
-black = "^23.1.0"
-pytest = "^7.2.1"
-flake8 = "^6.0.0"
-autopep8 = "^2.0.1"
+license = {text = "MIT"}
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
 
-[tool.black]
-line-length = 120
-target-version = ['py39']
-include = '\.pyi?$'
-exclude = '''
-/(
-    \.eggs
-  | \.git
-  | \.github
-  | \.mypy_cache
-  | \.pytest_cache
-  | build
-  | dist
-)/
-'''
-
-[tool.isort]
-profile = "black"
+[tool.pdm.dev-dependencies]
+dev = [
+    "ruff>=0.0.278",
+    "isort>=5.12.0",
+    "black>=23.7.0",
+    "pytest>=7.4.0",
+    "flake8>=6.0.0",
+    "autopep8>=2.0.2",
+    "ipykernel>=6.24.0",
+]

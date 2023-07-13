@@ -2,6 +2,6 @@ from setuptools import setup
 
 setup(
     name="qubox",
-    version="1.0.0",
+    version="0.1.0",
     install_requires=["numpy", "dimod", "plotly"],
 )
