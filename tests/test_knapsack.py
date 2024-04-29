@@ -1,6 +1,6 @@
 import numpy as np
 
-from qubox.knapsack import Knapsack
+from qubingx.knapsack import Knapsack
 
 # https://tutorial.openjij.org/build/html/ja/008-KnapsackPyqubo.html
 # value_list = np.array([5, 7, 2, 1, 4, 3])

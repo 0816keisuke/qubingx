@@ -1,6 +1,6 @@
 import numpy as np
 
-from qubox.qap import QAP
+from qubingx.qap import QAP
 
 factory_matrix = np.array([[0, 5, 2], [5, 0, 3], [2, 3, 0]])
 distance_matrix = np.array([[0, 8, 15], [8, 0, 13], [15, 13, 0]])

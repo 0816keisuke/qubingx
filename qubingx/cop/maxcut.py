@@ -1,7 +1,7 @@
 import numpy as np
 
-from qubox.cop.base import Matrix, Model
-from qubox.cop.qubo import QUBO
+from qubingx.cop.base import Matrix, Model
+from qubingx.cop.qubo import QUBO
 import numpy as np
 from typing import List
 
@@ -30,10 +30,10 @@ class MaxCut(QUBO):
         )
 
         self.h_obj(NUM_VERTEX, adjacency_mtx)
-        self.h_constraint()
+        self.h_pen()
         self.h_all()
 
-    def hamil_cost(self, NUM_VERTEX: int, adjacency_mtx: List[List[float]]):
+    def h_obj(self, NUM_VERTEX: int, adjacency_mtx: List[List[float]]):
         for i in range(NUM_VERTEX - 1):
             for j in range(i + 1, NUM_VERTEX):
                 w_ij = self.adjacency_mtx[i, j]
@@ -41,5 +41,5 @@ class MaxCut(QUBO):
                 self.Q_cost[i, i] += -1 * w_ij
                 self.Q_cost[j, j] += -1 * w_ij
 
-    def hamil_pen(self):
+    def h_pen(self):
         pass

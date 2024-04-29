@@ -1,6 +1,6 @@
 import numpy as np
 
-from qubox.maxcut import MaxCut
+from qubingx.maxcut import MaxCut
 
 # # This test is cited from arXiv, the followiong link:
 # # https://arxiv.org/abs/1811.11538

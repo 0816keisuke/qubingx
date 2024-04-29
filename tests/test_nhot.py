@@ -1,6 +1,6 @@
 import numpy as np
 
-from qubox.nhot import NHot
+from qubingx.nhot import NHot
 
 num_spin_row = 4
 

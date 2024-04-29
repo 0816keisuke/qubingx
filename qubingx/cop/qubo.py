@@ -1,45 +1,40 @@
-from dataclasses import dataclass
+from typing import Literal
 
 import numpy as np
 from dimod import BinaryQuadraticModel
 
-from qubox.cop.base import Base, Group, Matrix, Model
-from qubox.cop.errors import Errors
-from qubox.util.util import qubo_to_ising
-from qubox.util.util import to_bqm as util_to_bqm
-from qubox.util.util import to_dict as util_to_dict
+from qubingx.cop.base import Base, Group, Matrix, Model
+from qubingx.cop.errors import Errors
+from qubingx.util.util import qubo_to_ising
+from qubingx.util.util import to_bqm as util_to_bqm
+from qubingx.util.util import to_dict as util_to_dict
+
+group = Literal["all", "obj", "constraint"]
+key_type = Literal["int", "str"]
 
 
-@dataclass
 class QUBO(Base):
-    """
-    _summary_
-
-    Args:
-        Base (_type_): _description_
-
-    Raises:
-        Errors.GroupError: _description_
-        Errors.GroupError: _description_
-        Errors.GroupError: _description_
-        Errors.GroupError: _description_
-
-    Returns:
-        _type_: _description_
-    """
-
-    MODEL: Model
-    MATRIX: Matrix
-
-    num_spin: int
-
-    q_all: np.ndarray
-    q_obj: np.ndarray
-    q_constraint: np.ndarray
-
-    const_all: float
-    const_obj: float
-    const_constraint: float
+    def __init__(
+        self,
+        MODEL: Model,
+        MATRIX: Matrix,
+        num_spin: int,
+        q_all: np.ndarray,
+        q_obj: np.ndarray,
+        q_constraint: np.ndarray,
+        const_all: float,
+        const_obj: float,
+        const_constraint: float,
+    ):
+        self.MODEL = Model(MODEL)
+        self.MATRIX = Matrix(MATRIX)
+        self.num_spin = num_spin
+        self.q_all = q_all
+        self.q_obj = q_obj
+        self.q_constraint = q_constraint
+        self.const_all = const_all
+        self.const_obj = const_obj
+        self.const_constraint = const_constraint
 
     def h_all(self) -> None:
         self.q_all = self.q_obj + self.q_constraint
@@ -51,7 +46,7 @@ class QUBO(Base):
     def h_constraint(self) -> None:
         pass
 
-    def energy(self, x: np.ndarray, group: str = "all") -> float:
+    def energy(self, x: np.ndarray, group: group = "total") -> float:
         """
         _summary_
 
@@ -78,31 +73,57 @@ class QUBO(Base):
 
         return float(np.dot(np.dot(x, model), x) + const)
 
-    def check_constraint(self, x: np.ndarray) -> bool:
+    def energy(self, x: np.ndarray, group: group = "total") -> float:
         """
         _summary_
 
         Args:
             x (np.ndarray): _description_
+            model (np.ndarray): _description_
+            const (float): _description_
 
         Returns:
-            bool: _description_
+            float: _description_
+        """
+        group_dict = {
+            Group.all_.value: (self.q_all, self.const_all),
+            Group.obj.value: (self.q_obj, self.const_obj),
+            Group.constraint.value: (self.q_constraint, self.const_constraint),
+        }
+
+        if group not in group_dict:
+            raise Errors.GroupError(f"Invalid group name {group}")
+
+        model, const = group_dict[group]
+
+        return float(np.dot(np.dot(x, model), x) + const)
+
+    def check_constraint(self, x: np.ndarray) -> bool:
+        """
+        Check if the solution satisfies the constraint.
+
+        Args:
+            x (np.ndarray): a set of binary variables you want to check.
+
+        Returns:
+            bool: Return True if the solution satisfies the constraint.
+                  Return False if the solution does not satisfy the constraint.
         """
         energy = self.energy(x=x, group="constraint")
         return True if energy == 0.0 else False
 
     def to_dict(
         self,
-        group: str = "all",
+        group: group = "total",
         union: bool = True,
-        key_type: str = "int",
+        key_type: key_type = "int",
         spin_name: str = "",
     ):
         """
         _summary_
 
         Args:
-            group (str, optional): _description_. Defaults to "all".
+            group (str, optional): _description_. Defaults to "total".
             union (bool, optional): _description_. Defaults to True.
             key_type (str, optional): _description_. Defaults to "int".
             spin_name (str, optional): _description_. Defaults to "".
@@ -113,25 +134,27 @@ class QUBO(Base):
         Returns:
             _type_: _description_
         """
-        model_mtx = self.q_all
-        if group == Group.all.value:
-            pass
-        elif group == Group.obj.value:
-            model_mtx = self.q_obj
-        elif group == Group.constraint.value:
-            model_mtx = self.q_constraint
-        else:
+        group_dict = {
+            Group.all_.value: self.q_all,
+            Group.obj.value: self.q_obj,
+            Group.constraint.value: self.q_constraint,
+        }
+
+        if group not in group_dict:
             raise Errors.GroupError(f"Invalid group name {group}")
+
+        model_mtx = group_dict[group]
+
         return util_to_dict(
             model_mtx=model_mtx, union=union, key_type=key_type, spin_name=spin_name
         )
 
-    def to_bqm(self, group: str = "all") -> BinaryQuadraticModel:
+    def to_bqm(self, group: group = "total") -> BinaryQuadraticModel:
         """
         _summary_
 
         Args:
-            group (str, optional): _description_. Defaults to "all".
+            group (str, optional): _description_. Defaults to "total".
 
         Raises:
             KeyError: _description_
@@ -139,18 +162,17 @@ class QUBO(Base):
         Returns:
             _type_: _description_
         """
-        model_mtx = self.q_all
-        model_const = self.const_all
-        if group == Group.all.value:
-            pass
-        elif group == Group.obj.value:
-            model_mtx = self.q_obj
-            model_const = self.const_obj
-        elif group == Group.constraint.value:
-            model_mtx = self.q_constraint
-            model_const = self.const_constraint
-        else:
+        group_dict = {
+            Group.all_.value: (self.q_all, self.const_all),
+            Group.obj.value: (self.q_obj, self.const_obj),
+            Group.constraint.value: (self.q_constraint, self.const_constraint),
+        }
+
+        if group not in group_dict:
             raise Errors.GroupError(f"Invalid group name {group}")
+
+        model_mtx, model_const = group_dict[group]
+
         return util_to_bqm(
             model_mtx=model_mtx, MODEL=self.MODEL.value, const=model_const
         )
@@ -186,7 +208,7 @@ class QUBO(Base):
         Returns:
             _type_: _description_
         """
-        from qubox.cop.ising import ISING
+        from qubingx.cop.ising import ISING
 
         return ISING(
             MODEL="ISING",
