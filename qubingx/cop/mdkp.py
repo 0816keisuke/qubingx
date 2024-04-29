@@ -3,8 +3,8 @@ import math
 from typing import List
 import numpy as np
 
-from qubox.cop.base import Matrix, Model, Encoding
-from qubox.cop.qubo import QUBO
+from qubingx.cop.base import Matrix, Model, Encoding
+from qubingx.cop.qubo import QUBO
 
 
 class MDKP(QUBO):

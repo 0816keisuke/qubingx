@@ -17,7 +17,7 @@ class Matrix(Enum):
 
 @unique
 class Group(Enum):
-    all = "all"
+    all_ = "all"
     obj = "obj"
     constraint = "constraint"
 
@@ -39,7 +39,7 @@ class Base(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def h_constraint(self):
+    def h_pen(self):
         pass
 
     @abstractmethod

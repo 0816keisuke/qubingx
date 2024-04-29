@@ -2,11 +2,11 @@ from dataclasses import dataclass
 
 import numpy as np
 
-from qubox.cop.base import Base, Group, Matrix, Model
-from qubox.cop.errors import Errors
-from qubox.util.util import ising_to_qubo
-from qubox.util.util import to_bqm as util_to_bqm
-from qubox.util.util import to_dict as util_to_dict
+from qubingx.cop.base import Base, Group, Matrix, Model
+from qubingx.cop.errors import Errors
+from qubingx.util.util import ising_to_qubo
+from qubingx.util.util import to_bqm as util_to_bqm
+from qubingx.util.util import to_dict as util_to_dict
 
 
 @dataclass
@@ -33,20 +33,20 @@ class ISING(Base):
 
     j_all: np.ndarray
     j_obj: np.ndarray
-    j_constraint: np.ndarray
+    j_pen: np.ndarray
 
     const_all: float
     const_obj: float
-    const_constraint: float
+    const_pen: float
 
     def h_all(self):
-        self.j_all = self.j_obj + self.j_constraint
-        self.const_all = self.const_obj + self.const_constraint
+        self.j_all = self.j_obj + self.j_pen
+        self.const_all = self.const_obj + self.const_pen
 
     def h_obj(self) -> None:
         pass
 
-    def h_constraint(self) -> None:
+    def h_pen(self) -> None:
         pass
 
     def energy(self, x: np.ndarray, model: np.ndarray, const: float) -> float:
@@ -75,7 +75,7 @@ class ISING(Base):
         Returns:
             bool: _description_
         """
-        energy = self.energy(x=x, model=self.j_constraint, const=self.const_constraint)
+        energy = self.energy(x=x, model=self.j_pen, const=self.const_pen)
         return True if energy == 0.0 else False
 
     def to_dict(
@@ -135,7 +135,7 @@ class ISING(Base):
             model_const = self.const_obj
         elif group == Group.constraint.value:
             model_mtx = self.q_constraint
-            model_const = self.const_constraint
+            model_const = self.const_pen
         else:
             raise Errors.GroupError(f"Invalid group name {group}")
         return util_to_bqm(model_mtx=model_mtx, MODEL=self.MODEL, const=model_const)
@@ -171,7 +171,7 @@ class ISING(Base):
         Returns:
             _type_: _description_
         """
-        from qubox.cop.qubo import QUBO
+        from qubingx.cop.qubo import QUBO
 
         return QUBO(
             MODEL="QUBO",
@@ -179,8 +179,8 @@ class ISING(Base):
             num_spin=self.num_spin,
             q_all=ising_to_qubo(self.j_all, self.const_all)[0],
             q_obj=ising_to_qubo(self.j_obj, self.const_obj)[0],
-            q_constraint=ising_to_qubo(self.j_constraint, self.const_constraint)[0],
+            q_constraint=ising_to_qubo(self.j_pen, self.const_pen)[0],
             const_all=ising_to_qubo(self.j_all, self.const_all)[1],
             const_obj=ising_to_qubo(self.j_obj, self.const_obj)[1],
-            const_constraint=ising_to_qubo(self.j_constraint, self.const_constraint)[1],
+            const_pen=ising_to_qubo(self.j_pen, self.const_pen)[1],
         )
