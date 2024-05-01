@@ -2,20 +2,12 @@
 Use scipy.sparse
 Convert between Ising and QUBO
 
-# Combinatorial Optimiztion Problem from Lucas
-Number Partitioning Problem
-Graph Partitioning Problem
-Cliques Problem
-Binary Integer Linear Programming
-Graph Coloring Problem
-Hamilton Cycles/Path Problem
-Knapsack Problem
-Multi-Dimentional Knapsack Problem
+# misc/
+- Load instances
 
-# Utility
-util/analyzer ... analyze violation of penalty term.
-util/graphconversion ... json <-> adjacency <-> list.
+# Type hints
+- 型がグチャグチャ(特にutilとtest)
 
-# MISC
-- raise an error instead of exit()
-- Stop using spin_index
+# Test
+- mockを使う
+- クラス化する
