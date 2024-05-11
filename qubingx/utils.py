@@ -337,7 +337,7 @@ class QubingUtils:
         elif model_type == "QUBO":
             vartype = dimod.Vartype.BINARY
         else:
-            raise ValueError("model_type must be 'ising' or 'qubo'")
+            raise ValueError("model_type must be 'ISING' or 'QUBO'")
 
         return dimod.BinaryQuadraticModel(linear, quadratic, const, vartype)
 
