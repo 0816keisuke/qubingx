@@ -2,9 +2,6 @@
 - Use scipy.sparse
 - Convert between Ising and QUBO
 
-## COP
-- QUBO行列からそのままクラスを生成するクラス(Random.py)
-
 ## Utils/
 - 各種最適化問題のインスタンスをRandom生成するメソッド
     - random_graph, random_tsp, random_qap, etc.
