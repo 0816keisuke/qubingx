@@ -1,13 +1,19 @@
-# New implemantation
-Use scipy.sparse
-Convert between Ising and QUBO
+## New implemantation
+- Use scipy.sparse
+- Convert between Ising and QUBO
 
-# misc/
+## COP
+- QUBO行列からそのままクラスを生成するクラス(Random.py)
+
+## Utils/
+- 各種最適化問題のインスタンスをRandom生成するメソッド
+    - random_graph, random_tsp, random_qap, etc.
 - Load instances
+- Load graph
 
-# Type hints
+## Type hints
 - 型がグチャグチャ(特にutilとtest)
 
-# Test
+## Test
 - mockを使う
 - クラス化する

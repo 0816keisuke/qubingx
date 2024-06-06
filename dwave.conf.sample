@@ -1,0 +1,4 @@
+[defaults]
+token=
+endpoint=https://na-west-1.cloud.dwavesys.com/sapi/v2/
+solver=Advantage_system6.4
