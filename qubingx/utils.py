@@ -9,7 +9,6 @@ import plotly.express as px
 MODELTYPE = Literal["ISING", "QUBO"]
 KEYTYPE = Literal["int", "str"]
 
-
 class QubingUtils:
     def __init__(self) -> None:
         pass
@@ -313,10 +312,12 @@ class QubingUtils:
         model_dict_ln = {}
         # Linear term
         for idx_i in range(num_spin):
-            if key_type == "int":
-                model_dict_ln[idx_i] = model[idx_i, idx_i]
-            elif key_type == "str":
-                model_dict_ln[f"{spin_name}{idx_i}"] = model[idx_i, idx_i]
+            coef = model[idx_i, idx_i]
+            if coef != 0:
+                if key_type == "int":
+                    model_dict_ln[idx_i] = model[idx_i, idx_i]
+                elif key_type == "str":
+                    model_dict_ln[f"{spin_name}{idx_i}"] = model[idx_i, idx_i]
             # Quadratic term
             for idx_j in range(idx_i + 1, num_spin):
                 coef = model[idx_i, idx_j]
