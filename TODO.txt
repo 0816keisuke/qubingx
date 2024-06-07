@@ -2,11 +2,8 @@
 - Use scipy.sparse
 - Convert between Ising and QUBO
 
-## Utils/
-- 各種最適化問題のインスタンスをRandom生成するメソッド
-    - random_graph, random_tsp, random_qap, etc.
+## Utils
 - Load instances
-- Load graph
 
 ## Type hints
 - 型がグチャグチャ(特にutilとtest)
