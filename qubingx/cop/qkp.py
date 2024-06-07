@@ -3,7 +3,9 @@ from typing import Literal
 
 import numpy as np
 import numpy.typing as npt
+
 from qubingx.cop.base import Base, Encoding, Model
+
 
 class QKP(Base):
     def __init__(

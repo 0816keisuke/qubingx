@@ -15,9 +15,9 @@ class SAParams:
         num_sweeps_per_beta: int = 1,
         beta_schedule_type: Literal["linear", "geometric", "custom"] = "geometric",
         seed: int | None = None,
-        interrupt_function = None,
+        interrupt_function=None,
         beta_schedule: Any | None = None,
-        initial_states: dict[int, int] | None = None, # 本当はもっと複雑だけど面倒なので省略
+        initial_states: dict[int, int] | None = None,  # 本当はもっと複雑だけど面倒なので省略
         initial_states_generator: Literal["none", "tile", "random"] = "random",
         randomize_order: bool = False,
         proposal_acceptance_criteria: str = "Metropolis",
