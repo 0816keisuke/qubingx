@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from qubingx.utils import QubingUtils
+from qubingx.tools import QubingUtils
 
 
 @pytest.fixture

@@ -2,11 +2,10 @@ import math
 
 import numpy as np
 
-from qubingx.cop.base import Encoding, Model
-from qubingx.cop.qubo import QUBO
+from qubingx.cop.base import Base, Encoding, Model
 
 
-class MDKP(QUBO):
+class MDKP(Base):
     def __init__(
         self,
         value_list: list[int | float] | np.ndarray,

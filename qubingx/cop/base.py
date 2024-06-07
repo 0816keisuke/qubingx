@@ -5,7 +5,7 @@ import numpy.typing as npt
 from dimod import BinaryQuadraticModel
 
 from qubingx.cop.errors import Errors
-from qubingx.utils import QubingUtils
+from qubingx.tools import QubingUtils
 
 groups = Literal["all", "obj", "constraint"]
 key_type = Literal["int", "str"]
@@ -118,7 +118,9 @@ class Base:
             self.model = Model.QUBO
             self.h_all, self.const_all = utils.qubo_to_ising(self.h_all, self.const_all)
             self.h_obj, self.const_obj = utils.qubo_to_ising(self.h_obj, self.const_obj)
-            self.h_constraint, self.const_constraint = utils.qubo_to_ising(self.h_constraint, self.const_constraint)
+            self.h_constraint, self.const_constraint = utils.qubo_to_ising(
+                self.h_constraint, self.const_constraint
+            )
         elif self.model == Model.QUBO:
             raise Errors.ModelError("The model is already QUBO.")
         else:
@@ -131,6 +133,8 @@ class Base:
             self.model = Model.ISING
             self.h_all, self.const_all = utils.qubo_to_ising(self.h_all, self.const_all)
             self.h_obj, self.const_obj = utils.qubo_to_ising(self.h_obj, self.const_obj)
-            self.h_constraint, self.const_constraint = utils.qubo_to_ising(self.h_constraint, self.const_constraint)
+            self.h_constraint, self.const_constraint = utils.qubo_to_ising(
+                self.h_constraint, self.const_constraint
+            )
         else:
             raise Errors.ModelError(f"Invalid model name {self.model}")

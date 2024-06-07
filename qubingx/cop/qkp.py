@@ -3,9 +3,7 @@ from typing import Literal
 
 import numpy as np
 import numpy.typing as npt
-from cop.base import Base, Encoding, Model
-from cop.errors import EncodingNameError
-
+from qubingx.cop.base import Base, Encoding, Model
 
 class QKP(Base):
     def __init__(
