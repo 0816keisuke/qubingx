@@ -1,4 +1,3 @@
-import random
 from typing import Literal
 
 import dimod
@@ -8,6 +7,8 @@ import plotly.express as px
 
 MODELTYPE = Literal["ISING", "QUBO"]
 KEYTYPE = Literal["int", "str"]
+MATRIXTYPE = Literal["upper", "lower", "symmetric"]
+
 
 class QubingUtils:
     def __init__(self) -> None:
@@ -69,78 +70,6 @@ class QubingUtils:
         binary_str = bin(num_decimal)[2:].zfill(n)
         return [int(bit) for bit in binary_str]
 
-    def random_model(
-        self, n: int, v_min: int = -5, v_max: int = 5, seed: int | None = None
-    ) -> npt.NDArray:
-        """Generate random Ising/QUBO model with n spins and value range [v_min, v_max]
-
-        Args:
-            n (int): Number of spins
-            v_min (int, optional): Minimum value of the model. Defaults to -5.
-            v_max (int, optional): Maximum value of the model. Defaults to 5.
-            seed (int, optional): Random seed. Defaults to None.
-
-        Returns:
-            npt.NDArray: Random Ising/QUBO model
-        """
-        if seed is not None:
-            np.random.seed(seed)
-        model = np.random.randint(v_min, v_max + 1, (n, n))
-        model = np.triu(model, k=0)
-        return model
-
-    def random_solution(self, n: int, model_type: MODELTYPE, seed: int | None = None) -> list[int]:
-        """Generate random Ising/QUBO model solution
-
-        Args:
-            n (int): Number of spins
-            model_type (Literal[&quot;ISING&quot;, &quot;QUBO&quot;]): Model type
-            seed (int | None, optional): Random seed. Defaults to None.
-
-        Returns:
-            list[int]: Random Ising/QUBO model solution
-        """
-        if model_type not in ["ISING", "QUBO"]:
-            raise ValueError("model_type must be 'ISING' or 'QUBO'")
-        if seed is not None:
-            random.seed(seed)
-        return (
-            random.choices([-1, 1], k=n) if model_type == "ISING" else random.choices([0, 1], k=n)
-        )
-
-    # 2way-1hot制約を有するn行n列のランダムなQUBOの解を生成する
-    def random_twoway_onehot_solution(
-        self, n: int, mtx: bool = False, seed: int | None = None
-    ) -> list[int]:
-        """Generate random QUBO model solution with 2-way-1hot constraint
-
-        Args:
-            n (int): Number of rows and columns
-            seed (int | None, optional): Random seed. Defaults to None.
-            mtx (bool, optional): Matrix format. Defaults to False.
-
-        Returns:
-            npt.NDArray: Random QUBO model solution with 2-way-1hot constraint
-        """
-        if seed is not None:
-            random.seed(seed)
-        assignment = self.random_assignment(n=n, seed=seed)
-        return self.assignment_to_qubo_solution(assignment=assignment, mtx=mtx)
-
-    def random_assignment(self, n: int, seed: int | None = None) -> list[int]:
-        """Generate random assignment like TSP or QAP
-
-        Args:
-            n (int): Number of spins
-            seed (int | None, optional): Random seed. Defaults to None.
-
-        Returns:
-            list[int]: Random assignment
-        """
-        if seed is not None:
-            random.seed(seed)
-        return random.sample(range(n), n)
-
     def solution_ising_to_qubo(self, solution: npt.NDArray) -> npt.NDArray:
         """Convert Ising model solution to QUBO model solution
 
@@ -166,10 +95,10 @@ class QubingUtils:
     def assignment_to_qubo_solution(
         self, assignment: list[int] | npt.NDArray, mtx: bool = False
     ) -> list[int]:
-        """Generate QUBO model solution from assignment
+        """Generate QUBO model solution from an assignment
 
         Args:
-            assignment (list[int] | npt.NDArray): Assignment
+            assignment (list[int] | npt.NDArray): Assignment like TSP or QAP
             mtx (bool, optional): Matrix format. Defaults to False.
 
         Returns:
@@ -182,7 +111,7 @@ class QubingUtils:
         return x_m.tolist() if mtx else np.ravel(x_m).tolist()
 
     def qubo_solution_to_assignment(self, solution: npt.NDArray) -> list[int]:
-        """Generate assignment from QUBO model solution
+        """Generate an assignment from QUBO model solution
 
         Args:
             solution (npt.NDArray): QUBO model solution
@@ -194,51 +123,6 @@ class QubingUtils:
         x_m = np.reshape(solution, (num_spin, num_spin))
         return [np.where(x_m[i] == 1)[0][0] for i in range(num_spin)]
 
-    def exhaustive_search(
-        self,
-        model_type: MODELTYPE,
-        model: npt.NDArray,
-        const: float = 0.0,
-        hist: bool = False,
-        output: bool = False,
-    ) -> tuple:
-        num_spin = len(model)
-        energy_min = float("inf")
-        solution_min = [0] * num_spin
-        if hist:
-            solution_list = []
-            energy_list = []
-        for i in range(2**num_spin):
-            array = self.decimal_to_binary_array(i, len(model))
-            if model_type == "ISING":
-                solution = self.solution_qubo_to_ising(array)
-                energy = self.calc_energy(
-                    model_type="ISING", model=model, solution=solution, const=const
-                )
-            elif model_type == "QUBO":
-                solution = array
-                energy = self.calc_energy(
-                    model_type="QUBO", model=model, solution=solution, const=const
-                )
-            else:
-                raise ValueError("model_type must be 'ISING' or 'QUBO'")
-            if output:
-                print(f"spin: {solution}, energy: {energy}")
-            if hist:
-                solution_list.append(solution)
-                energy_list.append(energy)
-                if output:
-                    print(f"Update: spin: {solution_min}, energy: {energy_min}")
-            if energy < energy_min:
-                solution_min = solution
-                energy_min = energy
-        return (
-            (energy_min, solution_min)
-            if not hist
-            else (energy_min, solution_min, energy_list, solution_list)
-        )
-
-    # Isingモデル/QUBOモデルをリスト形式に変換
     def mtx_to_list(self, model: npt.NDArray) -> list[list[int | float]]:
         """Convert Ising/QUBO model matrix to list
 
@@ -257,7 +141,6 @@ class QubingUtils:
                     model_list.append([idx_i, idx_j, coef])
         return model_list
 
-    # Isingモデル/QUBOモデルを辞書形式に変換
     # TODO: 返り値の型ヒントを追加
     def mtx_to_dict(
         self,
