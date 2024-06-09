@@ -2,8 +2,18 @@
 - Use scipy.sparse
 - Convert between Ising and QUBO
 
+## COPs
+- GraphPartitionのISING式修正
+
+# solver
+- dwave_qpu_sampler.pyのDWaveQPU().sample()の返り値をどうするか検討
+    - energyはリスト，solutionsはnumpy.ndarray
+→ リストで統一するか，numpyに統一するか
+    - リストで統一するなら，calc_energy()などもリストで対応できるようにする
+
 ## Utils
 - Load instances
+- netwrokxによるグラフの描画
 
 ## Type hints
 - 型がグチャグチャ(特にutilとtest)
