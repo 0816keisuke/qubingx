@@ -1,6 +1,7 @@
 from .base import *
 from .errors import *
 from .given import *
+from .graph_partition import *
 from .knapsack import *
 from .maxcut import *
 from .mdkp import *
