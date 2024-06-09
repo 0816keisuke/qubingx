@@ -66,7 +66,7 @@ class RandomGenerator:
 
         Args:
             n (int): Number of nodes
-            p (float): Edge probability
+            p (float): Edge density
             seed (int | None, optional): Random seed. Defaults to None.
 
         Returns:

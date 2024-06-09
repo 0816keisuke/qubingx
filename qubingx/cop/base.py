@@ -75,7 +75,9 @@ class Base:
 
     def energy(self, solution: npt.NDArray, group: groups = "all") -> float:
         model, const = self._select_group(group)
-        return utils.calc_energy(model_type=self.model, model=model, solution=solution, const=const)
+        return utils.calc_energy(
+            model_type=self.model.value, model=model, solution=solution, const=const
+        )
 
     def check_constraint(self, solution: npt.NDArray) -> bool:
         """
@@ -89,7 +91,7 @@ class Base:
                   Return False if the solution does not satisfy the constraint.
         """
         return utils.check_constraint(
-            model_type=self.model,
+            model_type=self.model.value,
             model=self.h_constraint,
             solution=solution,
             const=self.const_constraint,
